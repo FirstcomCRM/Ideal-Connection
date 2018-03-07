@@ -14,13 +14,13 @@ class Dashboard {
     public function Dashboard(){
         include_once 'class/SelectControl.php';
         $this->select = new SelectControl();
-    
+
     }
 
     public function getInputForm($action){
         global $mandatory;
         include_once 'class/Empl.php';
-        $e = new Empl(); 
+        $e = new Empl();
         $hr_dashboard = false;
         $sales_purchase_dashboard = false;
 
@@ -32,14 +32,14 @@ class Dashboard {
             $hr_dashboard = false;
             $staff_dashboard = true;
         }
-       
+
     ?>
 <html>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Dashboard</title>
-    
+
     <?php
     include_once 'css.php';
     include_once 'js.php';
@@ -48,7 +48,7 @@ class Dashboard {
     <!--<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>-->
     <?php
         //HR Part
-        
+
         if($hr_dashboard){
             //total Pending Leave
             $dataLeave['data'] = getDataCountBySql("db_leave e", " WHERE e.leave_approvalstatus = 'Pending' AND e.leave_status = '1' ");
@@ -57,7 +57,7 @@ class Dashboard {
             $dataLeave['title'] = "Number of leave pending approved";
             $dataLeave['link'] = "leave.php";
             $pending_div_Leaves = $this->getDivCountData($dataLeave);
-            
+
             //total Pending Claims
             $dataClaims['data'] = getDataCountBySql("db_claims e", " WHERE e.claims_approvalstatus = 'Pending' AND e.claims_status = '1' ");
             $dataClaims['color'] = "bg-green";
@@ -65,7 +65,7 @@ class Dashboard {
             $dataClaims['title'] = "Number of claim pending approved";
             $dataClaims['link'] = "claims.php";
             $pending_div_Claims = $this->getDivCountData($dataClaims);
-            
+
             //total Employee
             $dataEmployee['data'] = getDataCountBySql("db_empl e", " WHERE e.empl_status = '1' ");
             $dataEmployee['color'] = "bg-yellow";
@@ -73,21 +73,21 @@ class Dashboard {
             $dataEmployee['title'] = "Total No. employee";
             $dataEmployee['link'] = "empl.php";
             $total_div_employee = $this->getDivCountData($dataEmployee);
-            
+
             //Passes Expiring
             $dataRenewal['data'] = $this->RenewalData();
             $dataRenewal['color'] = "box-warning";
             $dataRenewal['title'] = "Passes Expiring";
             $dataRenewal['col'] = "col-md-6";
             $renewal_div = $this->tableListing($dataRenewal);
-            
+
             //Probation Period Expiring
             $dataProbation['data'] = $this->ProbationData();
             $dataProbation['color'] = "box-warning";
             $dataProbation['title'] = "Probation Period Expiring";
             $dataProbation['col'] = "col-md-6";
             $probation_div = $this->tableListing($dataProbation);
-            
+
             //Employee Birthday
             $dataBirthday['data'] = $this->BirthdayData();
             $dataBirthday['color'] = "box-warning";
@@ -95,8 +95,8 @@ class Dashboard {
             $dataBirthday['col'] = "col-md-6";
             $birthday_div = $this->tableListing($dataBirthday);
         }
-        
-        if($staff_dashboard){ 
+
+        if($staff_dashboard){
             //Leave Status
             $dataLeaveStaff['data'] = $this->LeaveTable();
             $dataLeaveStaff['color'] = "box-warning";
@@ -104,7 +104,7 @@ class Dashboard {
             $dataLeaveStaff['col'] = "col-md-6";
             $dataLeaveStaff['display'] = "block";
             $LeaveStaff_div = $this->tableListing($dataLeaveStaff);
-            
+
             //Claims Status
             $dataClaimsStaff['data'] = $this->ClaimsTable();
             $dataClaimsStaff['color'] = "box-success";
@@ -112,7 +112,7 @@ class Dashboard {
             $dataClaimsStaff['col'] = "col-md-6";
             $dataClaimsStaff['display'] = "block";
             $ClaimsStaff_div = $this->tableListing($dataClaimsStaff);
-            
+
             //Balance Leave
             $dataBalanceLeaveStaff['data'] = $this->BalanceLeaveTable();
             $dataBalanceLeaveStaff['color'] = "box-danger";
@@ -120,7 +120,7 @@ class Dashboard {
             $dataBalanceLeaveStaff['col'] = "col-md-6";
             $dataBalanceLeaveStaff['display'] = "block";
             $BalanceLeaveStaff_div = $this->tableListing($dataBalanceLeaveStaff);
-            
+
             //Staff Directory
             $dataDirectoryStaff['data'] = '<embed src="Staff Directory.pdf" height = "100%" width = "100%">';
             $dataDirectoryStaff['color'] = "box-pp";
@@ -148,53 +148,71 @@ class Dashboard {
           </ol>-->
         </section>
         <section class="content" >
-            
-                    <!--admin-->
-                    <?php 
-                       $this->getCalender();
-                    ?>
-     
-                    <!--Manager-->
-                    <?php
-//                    if ($_SESSION['empl_group'] == "4")
-//                    { 
-//                        $this->getManagerDashboard();  
-//                        $this->getRemarkDashboard();
-//                    }?>
 
-                    <!--consultant_-->
-                    <?php 
-// if($_SESSION['empl_group'] == "8") {
-//                        $this->getConsultantDashboard();
-//                        $this->getRemarkDashboard();
-//                        $this->getCalender();
-//                     } 
+          <div class="row">
+            <div class="col-md-4">
+              <div class="box box-primary">
+                <div class="box-header with-border">
+                  <h2 class="box-title">Location</h2>
+
+                  <div class="box-tools pull-right">
+                    <?php
+                    $result = mysql_query("SELECT count(*) from db_location WHERE location_status = 1;");
+                //    echo   mysql_result($result, 0);
+
                      ?>
 
-                    <!-- candidate and client empl-->
-                    <?php 
-//                    if($_SESSION['empl_group'] == "5" || $_SESSION['empl_group'] == "9" || $_SESSION['empl_group'] == "4") { 
-//                        $this->getCalender();
-//                        $this->getCalenderForm();
-//                    }
-                    ?>
-                                        
-                    <!--Payroll-->
-                    <?php 
-//                    if($_SESSION['empl_group'] == "7") { 
-//                        $this->getPayrollForm();
-//                        $this->getCalender();
-//                    }
-                    ?>            
-            
-        </section>  
+                    <span data-toggle="tooltip" title="3 New Messages" class="badge bg-green"><?php echo mysql_result($result, 0) ?></span>
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                  </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <ul class="products-list product-list-in-box">
+                      <?php
+                        $sql = "SELECT * FROM db_location WHERE location_status = 1 ORDER BY updateDateTime DESC LIMIT 5";
+                        $query = mysql_query($sql);
+
+                       ?>
+                       <?php while ($row = mysql_fetch_array($query)) {?>
+                         <li class="item">
+                         <div class="product-img">
+                         <img src="dist/img/default-50x50.gif" alt="Product Image">
+                         </div>
+                         <div class="product-info">
+                           <h4><?php echo $row['location_title'] ?></h4>
+                         </div>
+                         </li>
+                       <?php  } ?>
+
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-center">
+                <a href="location.php" class="uppercase">View All Location</a>
+                </div>
+                <!-- /.box-footer -->
+              </div>
+            </div>
+            <div class="col-md-4">
+              box for booking
+            </div>
+          </div>
+
+
+
+
+
+        </section>
       </div>
       <?php include_once 'footer.php';?>
     </div><!-- ./wrapper -->
     <?php
     include_once 'js.php';
     ?>
-    
+
  <div class="modal fade " id="sstatusModal" role="dialog">
     <div class="modal-dialog ">
         <form action = 'payroll.php?selfview=1' method = "POST">
@@ -217,8 +235,8 @@ class Dashboard {
             </div>
         </form>
     </div>
-  </div>  
-    
+  </div>
+
     <script>
       $(function () {
         $('#payroll_table').DataTable({
@@ -229,7 +247,7 @@ class Dashboard {
           "info": true,
           "autoWidth": false
         });
- 
+
        $(function () {
         $('#otherManager_table').DataTable({
           "paging": true,
@@ -239,7 +257,7 @@ class Dashboard {
           "info": true,
           "autoWidth": false
         });
-      }); 
+      });
       $(function () {
         $('#job_table').DataTable({
           "paging": true,
@@ -249,7 +267,7 @@ class Dashboard {
           "info": true,
           "autoWidth": false
         });
-      });  
+      });
       $(function () {
         $('#interview_table').DataTable({
           "paging": true,
@@ -259,7 +277,7 @@ class Dashboard {
           "info": true,
           "autoWidth": false
         });
-      });  
+      });
       $(function () {
         $('#applicant_table').DataTable({
           "paging": true,
@@ -269,7 +287,7 @@ class Dashboard {
           "info": true,
           "autoWidth": false
         });
-      });        
+      });
       $(function () {
         $('#consultant_client_table').DataTable({
           "paging": true,
@@ -279,7 +297,7 @@ class Dashboard {
           "info": true,
           "autoWidth": false
         });
-      });       
+      });
       $(function () {
         $('#client_table').DataTable({
           "paging": true,
@@ -289,7 +307,7 @@ class Dashboard {
           "info": true,
           "autoWidth": false
         });
-      });           
+      });
       $(function () {
         $('#assigned_table').DataTable({
           "paging": true,
@@ -299,34 +317,34 @@ class Dashboard {
           "info": true,
           "autoWidth": false
         });
-      });       
-  
+      });
+
         $('.close_alert_payslip').click(function(){
             var data = "selfview=1&action=updateSelfView&payroll_id=" + $(this).attr('pid') + "&empl_id="+ $(this).attr('eid');
-            $.ajax({ 
+            $.ajax({
                type: 'POST',
                url: 'payroll.php',
                cache: false,
                data:data,
                success: function(data) {
-                   
+
                }
             });
         });
-        
+
         $('.astatus').click(function(){
                 $('#payroll_id').val($(this).attr('payroll_id'));
                 $('#empl_id').val($(this).attr('empl_id'));
                 $('#varify_action').val('varify_password');
         });
-        
+
         $('.delete').on('click',function(){
             var r = confirm("Confirm Delete");
             if (r == true) {
                $(this).closest('tr').remove();
                 var data = "action=updatePartnerDashboardDisplay&partner_id=" + $(this).attr("pid");
 
-                        $.ajax({ 
+                        $.ajax({
                         type: 'POST',
                         url: 'dashboard.php',
                         cache: false,
@@ -337,19 +355,19 @@ class Dashboard {
                         },
                         success: function(data) {
                            var jsonObj = eval ("(" + data + ")");
-                           issend = false;      
-                        }		
+                           issend = false;
+                        }
                      });
              }
-        });      
- 
+        });
+
         $('.delete-applicant').on('click',function(){
             var r = confirm("Confirm Delete");
             if (r == true) {
                $(this).closest('tr').remove();
                 var data = "action=updateApplicantDashboardDisplay&partner_id=" + $(this).attr("pid");
 
-                        $.ajax({ 
+                        $.ajax({
                         type: 'POST',
                         url: 'dashboard.php',
                         cache: false,
@@ -360,70 +378,18 @@ class Dashboard {
                         },
                         success: function(data) {
                            var jsonObj = eval ("(" + data + ")");
-                           issend = false;      
-                        }		
+                           issend = false;
+                        }
                      });
              }
-        });  
-        
-//        function activeCandidate(empl_id){
-//            var data = "action=getRemarkDetail&empl_id="+ empl_id;
-//                $.ajax({ 
-//                    type: 'POST',
-//                    url: 'dashboard.php',
-//                    cache: false,
-//                    data:data,
-//                    error: function(xhr) {
-//                        alert("System Error.");
-//                        issend = false;
-//                    },
-//                    success: function(data) {
-//                       var jsonObj = eval ("(" + data + ")");
-//                    
-//                    var activeApplTable = "";
-//
-//                    if( jsonObj['applicant']!=null){
-//                        activeApplTable = "<h4>"+jsonObj['aRemarks']['empl_name'][0]+"</h4><table class= 'table table-bordered table-hover' id='active_appl_table'" + "><thead><tr> <th style = 'width:2%'>No</th>";
-//                        activeApplTable = activeApplTable + "<th style = 'width:7%'>Candidate Name</th><th style = 'width:6%'>Mobile</th><th style = 'width:6%'>Email</th><th style = 'width:8%'></th></tr></thead><tbody>";
-//                        var pn = 1;
-//                        for(var i=0;i<jsonObj['applicant']['applicant_name'].length;i++){
-//                        activeApplTable = activeApplTable + "<tr><td><a href='applicant.php?action=edit&applicant_id=" + jsonObj['applicant']['applicant_id'][i] + "'>" + pn + "</a></td><td>" + jsonObj['applicant']['applicant_name'][i] + "</td><td>" + jsonObj['applicant']['applicant_mobile'][i] + "</td><td>" + jsonObj['applicant']['applicant_email'][i] + "</td>";
-//                        activeApplTable = activeApplTable + "<td><button type='button' class='btn btn-warning btn-client showremarks'  style='margin-right: 2px' pid='&string=and a.applicant_id=" + jsonObj['applicant']['applicant_id'][i] +"' id = '" + jsonObj['aRemarks']['empl_id'][0] + "'>R</button>";
-//                        activeApplTable = activeApplTable + "<button type='button' class='btn btn-info btn-client showremarks' style='margin-right: 2px'  data-toggle='tooltip' title='Clear' pid='&string=and a.applicant_id=" + jsonObj['applicant']['applicant_id'][i] + " and f.follow_type=2' id = '" + jsonObj['aRemarks']['empl_id'][0] + "'>I</button>";
-//                        activeApplTable = activeApplTable + "<button type='button' class='btn btn-success btn-client showremarks' style='margin-right: 2px' pid='&string=and a.applicant_id=" + jsonObj['applicant']['applicant_id'][i] + " and f.follow_type=0' id = '" + jsonObj['aRemarks']['empl_id'][0] + "'>S</button>";
-//                        activeApplTable = activeApplTable + "<button type='button' class='btn btn-danger btn-client delete' style='margin-right: 2px' pid='" + jsonObj['applicant']['follow_id'][i] + "' id='" + jsonObj['aRemarks']['empl_id'][0] + "'><i class='fa fa-dw fa-close'></i></button></td></tr>";
-//                                
-//                        pn++;
-//                    }
-//                    activeApplTable = activeApplTable + "</tbody><tfoot><tr> <th style = 'width:2%'>No</th>";
-//                           activeApplTable = activeApplTable + "<th style = 'width:7%'>Candidate Name</th><th style = 'width:7%'>Mobile</th><th style = 'width:7%'>Email</th><th style = 'width:7%'></th></tr></tfoot></table>";
-//                    }
-//                    else
-//                    {
-//                        activeApplTable = "<p>No have any applicant.</p>";
-//                    }
-//                    
-//                     
-//                    $('#pRemarks_content').html(activeApplTable);
-//                    
-//                    $(function () {
-//                        $('#active_appl_table').DataTable({
-//                          "paging": true,
-//                          "lengthChange": false,
-//                          "searching": true,
-//                          "ordering": true,
-//                          "info": true,
-//                          "autoWidth": false
-//                        });
-//                      });  
-//                    }
-//            });
-//        }
-         
+        });
+
+
+
          function remarks(id){
-                   
+
             var data = "action=getRemarkDetail&empl_id="+id;
-                $.ajax({ 
+                $.ajax({
                     type: 'POST',
                     url: 'dashboard.php',
                     cache: false,
@@ -434,17 +400,17 @@ class Dashboard {
                     },
                     success: function(data) {
                        var jsonObj = eval ("(" + data + ")");
-                    
+
                     var table = "";
-                    
-                    
+
+
                     if( jsonObj['aRemarks']!=null){
                         table = "<h4>"+jsonObj['aRemarks']['empl_name'][0]+"</h4><table class= 'table table-bordered table-hover' id='app_remark_table'" + "><thead><tr> <th style = 'width:2%'>No</th>";
                         table = table + "<th style = 'width:5%'>Candidate</th><th style = 'width:5%'>Client</th><th style = 'width:5%'>Follow Type</th><th style = 'width:15%'>Description</th>";
                         table = table + "<th style = 'width:5%'>Time & Date</th></tr></thead><tbody>";
-                    var n = 1; 
+                    var n = 1;
                     for(var i=0;i<jsonObj['aRemarks']['applicant_name'].length;i++){
-                        table = table + "<tr><td><a href='applicant.php?action=edit&current_tab=followup&applicant_id=" + jsonObj['aRemarks']['applicant_id'][i] + "&follow_id=" + jsonObj['aRemarks']['follow_id'][i] + "'>" + n +"</a></td><td>" + jsonObj['aRemarks']['applicant_name'][i] + "</td><td>" + jsonObj['aRemarks']['interview_company'][i] + "</td><td>" + jsonObj['aRemarks']['follow_type'][i] + "</td><td>" + jsonObj['aRemarks']['comments'][i] + "</td><td>" + jsonObj['aRemarks']['time'][i] +"<br>" + jsonObj['aRemarks']['date'][i] + "</td></tr>"; 
+                        table = table + "<tr><td><a href='applicant.php?action=edit&current_tab=followup&applicant_id=" + jsonObj['aRemarks']['applicant_id'][i] + "&follow_id=" + jsonObj['aRemarks']['follow_id'][i] + "'>" + n +"</a></td><td>" + jsonObj['aRemarks']['applicant_name'][i] + "</td><td>" + jsonObj['aRemarks']['interview_company'][i] + "</td><td>" + jsonObj['aRemarks']['follow_type'][i] + "</td><td>" + jsonObj['aRemarks']['comments'][i] + "</td><td>" + jsonObj['aRemarks']['time'][i] +"<br>" + jsonObj['aRemarks']['date'][i] + "</td></tr>";
                         n++;
                         }
                         table = table + "</tbody><tfoot><tr> <th style = 'width:2%'>No</th><th style = 'width:5%'>Candidate</th><th style = 'width:5%'>Client</th>";
@@ -468,15 +434,15 @@ class Dashboard {
                         activeApplTable = activeApplTable + "<button type='button' class='btn btn-info btn-client showremarks' data-toggle='tooltip' title='Show Interview' style='margin-right: 2px' pid='&string=and a.applicant_id=" + jsonObj['applicant']['applicant_id'][i] + " and f.follow_type=2' id = '" + jsonObj['aRemarks']['empl_id'][0] + "'>I</button>";
                         activeApplTable = activeApplTable + "<button type='button' class='btn btn-success btn-client showremarks' data-toggle='tooltip' title='Assigned' style='margin-right: 2px' pid='&string=and a.applicant_id=" + jsonObj['applicant']['applicant_id'][i] + " and f.follow_type=0' id = '" + jsonObj['aRemarks']['empl_id'][0] + "'>S</button>";
                         activeApplTable = activeApplTable + "<button type='button' class='btn btn-danger btn-client delete' data-toggle='tooltip' title='Clear' style='margin-right: 2px' pid='" + jsonObj['applicant']['follow_id'][i] + "'><i class='fa fa-dw fa-close'></i></button></td>";
-                                
+
                         //activeApplTable = activeApplTable + "<select id='select_dd'><option value='0'>Select One</option>";
                         //activeApplTable = activeApplTable + "<option value='D1'>D1</option>";
                         //activeApplTable = activeApplTable + "<option value='D2'>D2</option>";
                         //activeApplTable = activeApplTable + "<option value='D3'>D3</option>";
                         //activeApplTable = activeApplTable + "<option value='D4'>D4</option>";
                         //activeApplTable = activeApplTable + "<option value='D5'>D5</option></select>";
-                        activeApplTable = activeApplTable + "</td></tr>";       
-                                
+                        activeApplTable = activeApplTable + "</td></tr>";
+
                         pn++;
                     }
                     activeApplTable = activeApplTable + "</tbody><tfoot><tr> <th style = 'width:2%'>No</th>";
@@ -486,10 +452,10 @@ class Dashboard {
                     {
                         activeApplTable = "<p>No have any applicant.</p>";
                     }
-                    
-                     
+
+
                     $('#pRemarks_content').html(activeApplTable);
-                        
+
 //                    var ptable = "";
 //
 //                    if( jsonObj['pRemarks']!=null){
@@ -507,8 +473,8 @@ class Dashboard {
 //                    {
 //                        ptable = "<p>No have any remarks.</p>";
 //                    }
-//                    
-//                     
+//
+//
 //                    $('#pRemarks_content').html(ptable);
                       $(function () {
                         $('#app_remark_table').DataTable({
@@ -520,7 +486,7 @@ class Dashboard {
                           "autoWidth": false
                         });
                       });
-                      
+
                       $(function () {
                         $('#active_appl_table').DataTable({
                           "paging": true,
@@ -530,16 +496,16 @@ class Dashboard {
                           "info": true,
                           "autoWidth": false
                         });
-                      });  
-                    
+                      });
+
                     $('.select_dd').change(function(){
                         selectDD();
                     });
 
-                    
+
                     $('.showremarks').on('click',function(){
                         var data = "action=getRemarkDetail&empl_id="+$(this).attr("id")+"&applicant_id="+$(this).attr("pid");
-                                $.ajax({ 
+                                $.ajax({
                                 type: 'POST',
                                 url: 'dashboard.php',
                                 cache: false,
@@ -555,13 +521,13 @@ class Dashboard {
 
 
                                 if( jsonObj['aRemarks']!=null){
-                                    
+
                                     table = "<h4>"+jsonObj['aRemarks']['empl_name'][0] + " - Candidate ( "+ jsonObj['aRemarks']['applicant_name'][0] +" )"+"</h4><table class= 'table table-bordered table-hover' id='app_remark_table'" + "><thead><tr> <th style = 'width:2%'>No</th>";
                                     table = table + "<th style = 'width:5%'>Client</th><th style = 'width:5%'>Follow Type</th><th style = 'width:15%'>Description</th>";
                                     table = table + "<th style = 'width:5%'>Time & Date</th></tr></thead><tbody>";
-                                var n = 1; 
+                                var n = 1;
                                 for(var i=0;i<jsonObj['aRemarks']['applicant_name'].length;i++){
-                                    table = table + "<tr><td><a href='applicant.php?action=edit&current_tab=followup&applicant_id=" + jsonObj['aRemarks']['applicant_id'][i] + "&follow_id=" + jsonObj['aRemarks']['follow_id'][i] + "'>" + n +"</a></td><td>" + jsonObj['aRemarks']['interview_company'][i] + "</td><td>" + jsonObj['aRemarks']['follow_type'][i] + "</td><td>" + jsonObj['aRemarks']['comments'][i] + "</td><td>" + jsonObj['aRemarks']['time'][i] +"<br>" + jsonObj['aRemarks']['date'][i] + "</td></tr>"; 
+                                    table = table + "<tr><td><a href='applicant.php?action=edit&current_tab=followup&applicant_id=" + jsonObj['aRemarks']['applicant_id'][i] + "&follow_id=" + jsonObj['aRemarks']['follow_id'][i] + "'>" + n +"</a></td><td>" + jsonObj['aRemarks']['interview_company'][i] + "</td><td>" + jsonObj['aRemarks']['follow_type'][i] + "</td><td>" + jsonObj['aRemarks']['comments'][i] + "</td><td>" + jsonObj['aRemarks']['time'][i] +"<br>" + jsonObj['aRemarks']['date'][i] + "</td></tr>";
                                     n++;
                                     }
                                     table = table + "</tbody><tfoot><tr> <th style = 'width:2%'>No</th><th style = 'width:5%'>Client</th>";
@@ -572,7 +538,7 @@ class Dashboard {
                                     table = "<p>No have any remarks.</p>";
                                 }
                                 $('#aRemarks_content').html(table);
-                                
+
                                 $(function () {
                                     $('#app_remark_table').DataTable({
                                       "paging": true,
@@ -583,18 +549,18 @@ class Dashboard {
                                       "autoWidth": false
                                     });
                                   });
-                                }		
+                                }
                              });
                         });
-      
-      
+
+
                     $('.delete').on('click',function(){
                         var r = confirm("Confirm Delete");
                         if (r == true) {
                            $(this).closest('tr').remove();
                             var data = "action=updateDashboardDisplay&follow_id=" + $(this).attr("pid");
 
-                                    $.ajax({ 
+                                    $.ajax({
                                     type: 'POST',
                                     url: 'dashboard.php',
                                     cache: false,
@@ -605,43 +571,43 @@ class Dashboard {
                                     },
                                     success: function(data) {
                                        var jsonObj = eval ("(" + data + ")");
-                                       issend = false;      
-                                    }		
+                                       issend = false;
+                                    }
                                  });
                          }
-                    });   
-                        
-                        
+                    });
+
+
                        issend = false;
-                    }		
+                    }
                  });
                  return false;
          }
-         
+
          var id = <?php echo $_SESSION['empl_group'];?>;
          if(id == "8"){
              remarks(<?php echo $_SESSION['empl_id'];?>);
          }
-         
+
         //$('#follow_type').change(function(){
 
         function selectDD(){
             alert("HERE");
         }
 
-         
+
         $('.remarks').click(function(e){
                 e.preventDefault();
                 remarks($(this).attr("pid"));
         });
-        
+
 //        $('#applicant_table').DataTable(function(e){
 //                e.preventDefault();
 //        });
-            
+
             $('.clickTable').on('click',function(){
                 var data = "action=getclickTableDetail&applicant_id="+$(this).attr("pid");
-                        $.ajax({ 
+                        $.ajax({
                         type: 'POST',
                         url: 'dashboard.php',
                         cache: false,
@@ -663,7 +629,7 @@ class Dashboard {
 
                             var n = 1;
                         for(var i=0;i<jsonObj['aRemarks']['empl_name'].length;i++){
-                        table = table + "<tr><td>" + "<a href='applicant.php?action=edit&current_tab=followup&applicant_id=" + jsonObj['aRemarks']['applicant_id'][i] + "&follow_id=" + jsonObj['aRemarks']['follow_id'][i] + "&edit=" + jsonObj['aRemarks']['edit'][i] + "'>" + n + "</a></td><td>" + jsonObj['aRemarks']['empl_name'][i] +"</td><td>" + jsonObj['aRemarks']['interview_company'][i] + "</td><td>" + jsonObj['aRemarks']['follow_type'][i] + "</td><td>" + jsonObj['aRemarks']['comments'][i] + "</td><td>" + jsonObj['aRemarks']['status'][i] + "</td><td>" + jsonObj['aRemarks']['time'][i] + " " + jsonObj['aRemarks']['date'][i] + "</td></tr>" 
+                        table = table + "<tr><td>" + "<a href='applicant.php?action=edit&current_tab=followup&applicant_id=" + jsonObj['aRemarks']['applicant_id'][i] + "&follow_id=" + jsonObj['aRemarks']['follow_id'][i] + "&edit=" + jsonObj['aRemarks']['edit'][i] + "'>" + n + "</a></td><td>" + jsonObj['aRemarks']['empl_name'][i] +"</td><td>" + jsonObj['aRemarks']['interview_company'][i] + "</td><td>" + jsonObj['aRemarks']['follow_type'][i] + "</td><td>" + jsonObj['aRemarks']['comments'][i] + "</td><td>" + jsonObj['aRemarks']['status'][i] + "</td><td>" + jsonObj['aRemarks']['time'][i] + " " + jsonObj['aRemarks']['date'][i] + "</td></tr>"
                         n++;
                         }
                         table = table + "</tbody><tfoot><tr> <th style = 'width:2%'>No</th><th style = 'width:5%'>Create By</th>";
@@ -674,7 +640,7 @@ class Dashboard {
                            table = table + "No have any remarks.";
                        }
                            $('#aRemarks_content').html(table);
-                       
+
                            $(function () {
                             $('#applicant_remark_table').DataTable({
                               "paging": true,
@@ -684,14 +650,14 @@ class Dashboard {
                               "info": true,
                               "autoWidth": false
                             });
-                          });  
-                        }		
+                          });
+                        }
                      });
                 });
-             
+
             $('.clientApplicant').on('click',function(){
                 var data = "action=getClientApplicant&client_id="+$(this).attr("pid");
-                $.ajax({ 
+                $.ajax({
                     type: 'POST',
                     url: 'dashboard.php',
                     cache: false,
@@ -702,7 +668,7 @@ class Dashboard {
                     },
                     success: function(data) {
                        var jsonObj = eval ("(" + data + ")");
-                    
+
                     var clientApplTable = "";
 
                     if(jsonObj['client_applicant']!=null){
@@ -711,7 +677,7 @@ class Dashboard {
                         var pn = 1;
                         for(var i=0;i<jsonObj['client_applicant']['applicant_name'].length;i++){
                         clientApplTable = clientApplTable + "<tr><td><a href='applicant.php?action=edit&applicant_id=" + jsonObj['client_applicant']['applicant_id'][i] + "'>" + pn + "</a></td><td>" + jsonObj['client_applicant']['applicant_name'][i] + "</td><td>" + jsonObj['client_applicant']['applicant_mobile'][i] + "</td><td>" + jsonObj['client_applicant']['applicant_email'][i] + "</td></tr>";
-                                
+
                             pn++;
                         }
                         clientApplTable = clientApplTable + "</tbody><tfoot><tr> <th style = 'width:2%'>No</th>";
@@ -721,9 +687,9 @@ class Dashboard {
                     {
                         clientApplTable = "<p>No have any applicant.</p>";
                     }
-                    
+
                     $('#client_applicant_content').html(clientApplTable);
-                    
+
                            $(function () {
                             $('#cappl_table').DataTable({
                               "paging": true,
@@ -733,15 +699,15 @@ class Dashboard {
                               "info": true,
                               "autoWidth": false
                             });
-                          }); 
+                          });
                     }
                 });
             });
-             
-             
+
+
             $('.leave').click(function(){
-                var data = "action=createForm&leave_datefrom="+$('#dateStart').val()+"&leave_dateto="+$('#dateEnd').val(); 
-                $.ajax({ 
+                var data = "action=createForm&leave_datefrom="+$('#dateStart').val()+"&leave_dateto="+$('#dateEnd').val();
+                $.ajax({
                     type: 'POST',
                     url: 'leave.php',
                     cache: false,
@@ -757,16 +723,16 @@ class Dashboard {
                            window.location.href = url;
 
                        //issend = false;
-                    }		
+                    }
                  });
                  return false;
-            });          
-            
+            });
+
             $('.attendanceform').hide();
             $('.attendanceform1').hide();
             $('.attendanceform2').hide();
             $('.supervisor').hide();
-            
+
             $('.attendance').click(function(){
                 $('.dateEnd').hide();
                 $('.attendanceform').show();
@@ -787,12 +753,12 @@ class Dashboard {
                 $('.supervisor').hide();
                 document.getElementById('dateStartLabel').innerHTML = 'Date Start :';
             });
-            
-            
+
+
             $('.saveattendance').click(function(){
                 var data = "action=saveAttendance&applicant_id=<?php echo $_SESSION['empl_id'];?>&datefrom="+$('#dateStart').val()+"&dateto="+$('#dateEnd').val();
                     data = data + "&lunchhour="+$('#lunchHour').val()+"&overtimehour="+$('#overtimeHour').val()+"&timein="+$('#timeIn').val()+"&timeout="+$('#timeOut').val();
-                $.ajax({ 
+                $.ajax({
                     type: 'POST',
                     url: 'dashboard.php',
                     cache: false,
@@ -816,15 +782,15 @@ class Dashboard {
 
 
                        issend = false;
-                    }		
+                    }
                  });
                  return false;
-            });   
+            });
 
             $('.updateattendance').click(function(){
                 var data = "action=updateAttendance&applicant_id=<?php echo $_SESSION['empl_id'];?>&datefrom="+$('#dateStart').val()+"&dateto="+$('#dateEnd').val()+"&attendance_remark="+$('#attendance_remark').val();
                     data = data + "&lunchhour="+$('#lunchHour').val()+"&overtimehour="+$('#overtimeHour').val()+"&timein="+$('#timeIn').val()+"&timeout="+$('#timeOut').val()+"&attendance_id="+$('#attendance_id').val();
-                $.ajax({ 
+                $.ajax({
                     type: 'POST',
                     url: 'dashboard.php',
                     cache: false,
@@ -846,27 +812,27 @@ class Dashboard {
                        }
 
                        issend = false;
-                    }		
+                    }
                  });
                  return false;
-            });   
+            });
 
             $('.applicant_follow').click(function(){
-                
+
                 //alert('asdsad');
                 var url = $(this).attr("pid");
-                window.location.href = url;                
+                window.location.href = url;
             });
-            
+
             $('.applicant_assign').click(function(){
-                
+
                 //alert('asdsad');
                 var url = $(this).attr("pid");
-                window.location.href = url;                
-            });            
+                window.location.href = url;
+            });
       });
     </script>
-    
+
 <script>
       $(function () {
 
@@ -912,10 +878,10 @@ class Dashboard {
           selectable: true,
           selectHelper: true,
           //editable: true,
-          
+
           events: 'dashboard.php?action=getCalenderDetail',
 			select: function(start, end) {
-                        
+
                             var fromDate = moment(start).format('YYYY/MM/DD');
 
                             var currentDate = $('#calendar').fullCalendar('YYYY/MM/DD');
@@ -924,9 +890,9 @@ class Dashboard {
 //                                alert('Pass Date Cannot Edit')
                                 return false;
                             }
-                            
-                            
-                    
+
+
+
                              fromDate = fromDate.replace("/", "-");
                              fromDate = fromDate.replace("/", "-");
                             var endDate = moment(end).format('YYYY/MM/DD');
@@ -937,7 +903,7 @@ class Dashboard {
                             var tempyear = parseInt(endDate.substring(4,0));
                             var tempmonth = endDate.substring(7,5);
                             var tempday = endDate.substring(10,8);
-                            
+
                             if(tempmonth == "01" && tempday == "01")
                             {
                                 tempmonth = "12";
@@ -950,7 +916,7 @@ class Dashboard {
                                             if(tempday == "01"){
                                                 tempday = "28";
                                                 tempmonth = parseInt(tempmonth)-1;
-                                            }else 
+                                            }else
                                                 tempday = parseInt(tempday)-1 ;
                                         }
                                         else if(tempmonth == "02" || tempmonth == "04" || tempmonth == "06" || tempmonth == "08" || tempmonth == "09" || tempmonth == "11"){
@@ -968,15 +934,15 @@ class Dashboard {
                                                 tempmonth = parseInt(tempmonth)-1;
                                             }else{
                                                 tempday = parseInt(tempday)-1;
-                                            }                                    
-                                        }          
+                                            }
+                                        }
                                     }
                                     else{
                                         if(tempmonth == "03"){
                                             if(tempday == "01"){
                                                 tempday = "28";
                                                 tempmonth = parseInt(tempmonth)-1;
-                                            }else 
+                                            }else
                                                 tempday = parseInt(tempday)-1 ;
                                         }
                                         else if(tempmonth == "02" || tempmonth == "04" || tempmonth == "06" || tempmonth == "08"|| tempmonth == "09" || tempmonth == "11"){
@@ -994,8 +960,8 @@ class Dashboard {
                                                 tempmonth = parseInt(tempmonth)-1;
                                             }else{
                                                 tempday = parseInt(tempday)-1 ;
-                                            }                                    
-                                        }                                
+                                            }
+                                        }
                                     }
                                 }
                                 if(tempday < 10){
@@ -1003,7 +969,7 @@ class Dashboard {
                                 }
 
                             var finishDate = tempyear + "-" + tempmonth + "-" + tempday;
-                            
+
                             document.getElementById("dateStart").value =  moment(fromDate).format('DD-MMMM-YYYY');
                             document.getElementById("dateEnd").value =  moment(finishDate).format('DD-MMMM-YYYY');
 
@@ -1027,28 +993,28 @@ class Dashboard {
 					$('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true
 				}
 				$('#calendar').fullCalendar('unselect');
-			},     
-                        
-                        
-                        
+			},
+
+
+
                 eventRender: function (event, element) {
                     //element.attr('href', 'javascript:void(0);');
                     element.click(function () {
-                        
+
                         var user = <?php echo $_SESSION['empl_group']; ?>;
                         var event_date = moment(event.start).format('DD-MMMM-YYYY');
                         document.getElementById("dateStart").value = event_date;
-                        document.getElementById("dateEnd").value = event_date;             
+                        document.getElementById("dateEnd").value = event_date;
                         document.getElementById("lunchHour").value = event.lunchHour;
-                        document.getElementById("overtimeHour").value = event.overtimeHour; 
+                        document.getElementById("overtimeHour").value = event.overtimeHour;
                         document.getElementById("timeIn").value = event.timeIn;
-                        document.getElementById("timeOut").value = event.timeOut; 
-                        document.getElementById("attendance_id").value = event.attendance_id; 
+                        document.getElementById("timeOut").value = event.timeOut;
+                        document.getElementById("attendance_id").value = event.attendance_id;
                         document.getElementById("attendance_remark").value = event.attendance_remark;
                         var today = $('#calendar').fullCalendar('getDate').format('MM/DD/YYYY');
                         var eventdate = moment(event.start).format('MM/DD/YYYY');
-                        
-                        document.getElementById('dateStartLabel').innerHTML = 'Date :';  
+
+                        document.getElementById('dateStartLabel').innerHTML = 'Date :';
                         today = new Date(today);
                         eventdate = new Date(eventdate);
 
@@ -1061,7 +1027,7 @@ class Dashboard {
                             $('.attendanceform2').show();
                             $('.LAbutton').hide();
                             $('.supervisor').hide();
-                            $('#myModal').modal('show'); 
+                            $('#myModal').modal('show');
 
                         }else{
                             if(user == "9"){
@@ -1071,7 +1037,7 @@ class Dashboard {
                                 $('.attendanceform2').show();
                                 $('.LAbutton').hide();
                                 $('.supervisor').show();
-                                $('#myModal').modal('show');      
+                                $('#myModal').modal('show');
                             }
                             if(user == "5"){
                                 $('.dateEnd').hide();
@@ -1082,7 +1048,7 @@ class Dashboard {
                                 $('.supervisor').hide();
                                 $('#myModal').modal('show');
                             }
-                            else{ 
+                            else{
                                 $('.dateEnd').hide();
                                 $('.attendanceform').hide();
                                 $('.attendanceform1').hide();
@@ -1093,8 +1059,8 @@ class Dashboard {
                             }
                         }
                     });
-                },       
-                
+                },
+
                 dayRender: function (date, cell) {
 
                     var today = new Date();
@@ -1106,7 +1072,7 @@ class Dashboard {
                     }
 
                 },
-          
+
           buttonText: {
             today: 'today',
             month: 'month',
@@ -1195,9 +1161,9 @@ class Dashboard {
       });
       Date.prototype.getUnixTime = function() { return this.getTime()/1000|0 };
 
-    </script>    
-       
-    
+    </script>
+
+
         <script>
       $(function () {
         $("#example1").DataTable();
@@ -1212,23 +1178,23 @@ class Dashboard {
       });
     </script>
   </body>
-</html>
+</html> <!--end of getInputform input form???--->
         <?php
     }
     public function getHrDashboard($action){
         global $mandatory;
         include_once 'class/Empl.php';
-        $e = new Empl(); 
-        
+        $e = new Empl();
+
         //total Pending Leave
         $total_pending_leave = getDataCountBySql("db_leave e", " WHERE e.leave_approvalstatus = 'Pending' AND e.leave_status = '1' ");
-        
+
         //total Pending Purchase Order
         $total_pending_PO = getDataCountBySql("db_order oe", " WHERE oe.order_prefix_type = 'PO' AND oe.order_status = '1' AND oe.order_id NOT IN (SELECT invoice_generate_from FROM db_invoice WHERE invoice_prefix_type = 'PI' AND invoice_status = '1' )");
-        
+
         //total Product
         $total_product = getDataCountBySql("db_product", " WHERE product_status = '1'");
-         
+
         //total Partner
         $total_partner = getDataCountBySql("db_partner", " WHERE partner_status = '1'");
     ?>
@@ -1319,7 +1285,7 @@ class Dashboard {
         <div class="row">
             <div class="col-md-6">
                 <?php //echo $this->getCalendar();?>
-            </div><!-- /.col (LEFT) -->   
+            </div><!-- /.col (LEFT) -->
             <div class="col-md-6">
 
 
@@ -1335,14 +1301,14 @@ class Dashboard {
   </body>
 </html>
         <?php
-        
+
     }
 
     public function getAreaChart(){
     ?>
     <script>
-      $(function () {   
-          
+      $(function () {
+
         var areaChartCanvas = $("#areaChart").get(0).getContext("2d");
         // This will get the first returned node in the jQuery collection.
         var areaChart = new Chart(areaChartCanvas);
@@ -1414,8 +1380,8 @@ class Dashboard {
 
         //Create the line chart
         areaChart.Line(areaChartData, areaChartOptions);
-        
-      });  
+
+      });
      </script>
         <div class="box box-primary">
               <div class="box-header with-border">
@@ -1430,15 +1396,15 @@ class Dashboard {
                   <canvas id="areaChart" style="height:250px"></canvas>
                 </div>
               </div><!-- /.box-body -->
-        </div><!-- /.box -->      
-            
-    <?php        
+        </div><!-- /.box -->
+
+    <?php
     }
     public function getDonutChart(){
     ?>
     <script>
-      $(function () {   
-          
+      $(function () {
+
         //-------------
         //- PIE CHART -
         //-------------
@@ -1510,8 +1476,8 @@ class Dashboard {
         //Create pie or douhnut chart
         // You can switch between pie and douhnut using the method below.
         pieChart.Doughnut(PieData, pieOptions);
-        
-      });  
+
+      });
      </script>
         <div class="box box-primary">
               <div class="box-header with-border">
@@ -1524,15 +1490,15 @@ class Dashboard {
               <div class="box-body">
                   <canvas id="pieChart" style="height:250px"></canvas>
               </div><!-- /.box-body -->
-        </div><!-- /.box -->      
-            
-    <?php        
+        </div><!-- /.box -->
+
+    <?php
     }
     public function getLineChart(){
     ?>
     <script>
-      $(function () {   
-          
+      $(function () {
+
         var lineChartData = {
           labels: ["January", "February", "March", "April", "May", "June", "July"],
           datasets: [
@@ -1557,7 +1523,7 @@ class Dashboard {
               data: [28, 48, 40, 19, 86, 27, 90]
             }
           ]
-        }; 
+        };
         var lineChartOptions = {
           //Boolean - If we should show the scale at all
           showScale: true,
@@ -1604,10 +1570,10 @@ class Dashboard {
         var lineChart = new Chart(lineChartCanvas);
         lineChartOptions.datasetFill = false;
         lineChart.Line(lineChartData, lineChartOptions);
-        
-      });  
-     </script> 
-        
+
+      });
+     </script>
+
         <div class="box box-info">
             <div class="box-header with-border">
               <h3 class="box-title">Line Chart</h3>
@@ -1621,14 +1587,14 @@ class Dashboard {
                 <canvas id="lineChart" style="height:250px"></canvas>
               </div>
             </div><!-- /.box-body -->
-        </div><!-- /.box -->   
-    <?php    
+        </div><!-- /.box -->
+    <?php
     }
     public function getBarChart(){
     ?>
     <script>
-      $(function () {   
-          
+      $(function () {
+
         //-------------
         //- BAR CHART -
         //-------------
@@ -1692,9 +1658,9 @@ class Dashboard {
 
         barChartOptions.datasetFill = false;
         barChart.Bar(barChartData, barChartOptions);
-        
-      });  
-     </script> 
+
+      });
+     </script>
         <div class="box box-info">
             <div class="box-header with-border">
               <h3 class="box-title">Bar Chart</h3>
@@ -1708,13 +1674,13 @@ class Dashboard {
                 <canvas id="barChart" style="height:230px"></canvas>
               </div>
             </div><!-- /.box-body -->
-        </div><!-- /.box -->   
-    <?php    
+        </div><!-- /.box -->
+    <?php
     }
     public function getDivCountData($data){
-        
+
         $html = <<<EOF
-                
+
             <div class="col-lg-3 col-xs-6">
               <!-- small box -->
               <div class="small-box {$data['color']}">
@@ -1729,9 +1695,9 @@ class Dashboard {
                   More info <i class="fa fa-arrow-circle-right"></i>
                 </a>
               </div>
-            </div>     
+            </div>
 EOF;
-        
+
             return $html;
     }
     public function RenewalData(){
@@ -1739,7 +1705,7 @@ EOF;
         $todaydate = date( "Y-m-d");
         $sql = "SELECT * FROM db_empl WHERE empl_pass_renewal BETWEEN '$todaydate' AND '$myDate' AND empl_status = 1";
         $query = mysql_query($sql);
-        $data = "<table style = 'width:100%' class = 'table'  >" . 
+        $data = "<table style = 'width:100%' class = 'table'  >" .
                 "<tr>".
                     "<th>Name</th>".
                     "<th>FIN/WP No</th>".
@@ -1749,7 +1715,7 @@ EOF;
         while($row = mysql_fetch_array($query)){
             $data .= "<tr>".
                         "<td><a href = 'empl.php?action=edit&empl_id={$row['empl_id']}' target = '_blank'>{$row['empl_name']}</a></td>".
-                        "<td>{$row['empl_work_permit']}</td>".        
+                        "<td>{$row['empl_work_permit']}</td>".
                         "<td>" . getDataCodeBySql("emplpass_code","db_emplpass"," WHERE emplpass_id = '{$row['empl_emplpass']}' ","") . "</td>".
                         "<td>" . format_date($row['empl_pass_renewal']) . "</td>".
                     "</tr>";
@@ -1766,10 +1732,10 @@ EOF;
         $myDate = date("Y-m-d", strtotime( date( "Y-m-d", strtotime( date("Y-m-d") ) ) . "+1 month" ) );
         $todaydate = date( "Y-m-d");
         $sql = "SELECT empl_id,empl_name,empl_joindate,empl_probation,empl_extentionprobation,DATE_ADD(empl_joindate, INTERVAL (empl_extentionprobation + empl_probation) MONTH) as probation_date
-                 FROM db_empl 
+                 FROM db_empl
                  WHERE DATE_ADD(empl_joindate, INTERVAL (empl_extentionprobation + empl_probation) MONTH) BETWEEN '$todaydate' AND '$myDate' AND empl_status = 1";
         $query = mysql_query($sql);
-        $data = "<table style = 'width:100%' class = 'table'  >" . 
+        $data = "<table style = 'width:100%' class = 'table'  >" .
                 "<tr>".
                     "<th>Name</th>".
                     "<th>Join Date</th>".
@@ -1783,9 +1749,9 @@ EOF;
             }
             $data .= "<tr>".
                         "<td><a href = 'empl.php?action=edit&empl_id={$row['empl_id']}' target = '_blank'>{$row['empl_name']}</a></td>".
-                        "<td>" . format_date($row['empl_joindate']) . "</td>".        
+                        "<td>" . format_date($row['empl_joindate']) . "</td>".
                         "<td>" . format_date($row['probation_date']) . "</td>".
-                        "<td>" . $empl_probation . "</td>".       
+                        "<td>" . $empl_probation . "</td>".
                     "</tr>";
         }
         if(mysql_num_rows($query) <=0){
@@ -1800,7 +1766,7 @@ EOF;
 
         $sql = "SELECT * FROM db_empl WHERE month(empl_birthday) BETWEEN '" . date("m") . "' AND '" . date("m", strtotime( date( "Y-m-d", strtotime( date("Y-m-d") ) ) . "+1 month" ) ) . "' AND empl_status = 1";
         $query = mysql_query($sql);
-        $data = "<table style = 'width:100%' class = 'table'  >" . 
+        $data = "<table style = 'width:100%' class = 'table'  >" .
                 "<tr>".
                     "<th>Name</th>".
                     "<th>Date Of Birth</th>".
@@ -1811,8 +1777,8 @@ EOF;
                 $empl_probation = $empl_probation . " + " . $row['empl_extentionprobation'];
             }
             $data .= "<tr>".
-                        "<td><a href = 'empl.php?action=edit&empl_id={$row['empl_id']}' target = '_blank'>{$row['empl_name']}</a></td>".     
-                        "<td>" . format_date($row['empl_birthday']) . "</td>".  
+                        "<td><a href = 'empl.php?action=edit&empl_id={$row['empl_id']}' target = '_blank'>{$row['empl_name']}</a></td>".
+                        "<td>" . format_date($row['empl_birthday']) . "</td>".
                     "</tr>";
         }
         if(mysql_num_rows($query) <=0){
@@ -1844,18 +1810,18 @@ EOF;
                       {$data['data']}
                     </div>
                 </div>
-            </div>       
-                
+            </div>
+
 EOF;
         return $html;
     }
     public function LeaveTable(){
         $todaydate = date( "Y-m-d");
         $sql = "SELECT *
-                FROM db_leave 
+                FROM db_leave
                 WHERE leave_datefrom >= '$todaydate' AND leave_status = 1 AND leave_empl_id = '{$_SESSION['empl_id']}'";
         $query = mysql_query($sql);
-        $data = "<table style = 'width:100%' class = 'table'  >" . 
+        $data = "<table style = 'width:100%' class = 'table'  >" .
                 "<tr>".
                     "<th>Type</th>".
                     "<th>Leave Start Date</th>".
@@ -1892,12 +1858,12 @@ EOF;
     public function ClaimsTable(){
         $month_start = system_date_monthstart;
         $month_end = system_date_monthend;
-        
+
         $sql = "SELECT *
                 FROM db_claims
                 WHERE claims_date BETWEEN '$month_start' AND '$month_end' AND claims_status = 1 AND claims_empl_id = '{$_SESSION['empl_id']}'";
         $query = mysql_query($sql);
-        $data = "<table style = 'width:100%' class = 'table'  >" . 
+        $data = "<table style = 'width:100%' class = 'table'  >" .
                 "<tr>".
                     "<th>Date</th>".
                     "<th>Remark</th>".
@@ -1932,7 +1898,7 @@ EOF;
     public function BalanceLeaveTable(){
         $year_start = system_date_yearstart;
         $year_end = system_date_yearend;
-        $year = date("Y");   
+        $year = date("Y");
         $sql = "SELECT lt.*,el.emplleave_days,el.emplleave_id,el.emplleave_entitled
                 FROM db_leavetype lt
                 LEFT JOIN db_emplleave el ON el.emplleave_leavetype = lt.leavetype_id AND el.emplleave_empl = '{$_SESSION['empl_id']}'
@@ -1940,7 +1906,7 @@ EOF;
                 ORDER BY lt.leavetype_seqno,lt.leavetype_code";
 
         $query = mysql_query($sql);
-        $data = "<table style = 'width:100%' class = 'table'  >" . 
+        $data = "<table style = 'width:100%' class = 'table'  >" .
                 "<tr>".
                     "<th>Leave Name</th>".
                     "<th>Entitled</th>".
@@ -1955,7 +1921,7 @@ EOF;
 
 // Customer mention urgent leave same with annual leave , calculate together at 2016-12-07 (Zen)
 if($row['leavetype_id'] == 1){
-   $wheresub = " AND leave_type IN ('1','10') "; 
+   $wheresub = " AND leave_type IN ('1','10') ";
 }else{
    $wheresub = " AND leave_type = '{$row['leavetype_id']}' ";
 }
@@ -1979,23 +1945,23 @@ if($row['leavetype_id'] == 1){
         return $data;
     }
     public function getPayslipAlert(){
-        
+
         $wherestring = " AND payline_empl_id = '" . escape($_SESSION['empl_id']) . "'";
         $sql = "SELECT py.payroll_startdate,py.payroll_id
                 FROM db_payline pl
                 INNER JOIN db_payroll py ON py.payroll_id = pl.payline_payroll_id
-                WHERE py.payroll_status = '1' AND pl.payline_selfview = 0 $wherestring 
+                WHERE py.payroll_status = '1' AND pl.payline_selfview = 0 $wherestring
                 ORDER BY py.payroll_startdate LIMIT 0,1";
         $query = mysql_query($sql);
         if($row = mysql_fetch_array($query)){
-          
+
     ?>
     <div class="pad margin no-print">
 
         <div class="alert alert-warning alert-dismissable"  style = 'color:black !important'>
             <button type="button" class="close close_alert_payslip" pid = "<?php echo $row['payroll_id'];?>" eid = "<?php echo $_SESSION['empl_id'];?>" data-dismiss="alert" aria-hidden="true">×</button>
             <h4><i class="icon fa fa-warning" style = 'color:black !important'></i> Alert!</h4>
-           
+
             Your <b><?php echo date("M", strtotime($row['payroll_startdate']));?></b> of payslip is ready for viewing and print. <a class = 'astatus' data-toggle="modal" data-target="#sstatusModal" style = 'color:#3c8dbc !important' href = '#' payroll_id = '<?php echo $row['payroll_id'];?>' empl_id = '<?php echo $_SESSION['empl_id'];?>'> View </a>
          </div>
     </div>
@@ -2011,8 +1977,8 @@ if($row['leavetype_id'] == 1){
     <title>Employee Management</title>
     <?php
     include_once 'css.php';
-    
-    ?>    
+
+    ?>
     <style>
     .hide{
     display:none;
@@ -2037,7 +2003,7 @@ if($row['leavetype_id'] == 1){
                 <h3 class="box-title">Change Password</h3>
 
               </div>
-                
+
                 <form id = 'empl_form' class="form-horizontal" action = 'dashboard.php?action=changepassword' method = "POST" enctype="multipart/form-data">
                     <input type ='hidden' name = 'current_tab' id = 'current_tab' value = "<?php echo $this->current_tab?>"/>
                   <div class="box-body">
@@ -2068,13 +2034,13 @@ if($row['leavetype_id'] == 1){
     </div><!-- ./wrapper -->
     <?php
     include_once 'js.php';
-    
+
     ?>
     <script>
     $(document).ready(function() {
         $('#empl_login_password').focus();
         $("#empl_form").validate({
-                  rules: 
+                  rules:
                   {
 
                       empl_login_password:
@@ -2086,7 +2052,7 @@ if($row['leavetype_id'] == 1){
                         required: true,
                         minlength : 5,
                         equalTo : "#empl_login_password"
-                      }  
+                      }
                   },
                   messages:
                   {
@@ -2105,7 +2071,7 @@ if($row['leavetype_id'] == 1){
     </script>
   </body>
 </html>
-    <?php    
+    <?php
     }
     public function ChangePassword(){
         $this->empl_login_password = md5("@#~x?\$" . $this->empl_login_password . "?\$");
@@ -2119,18 +2085,18 @@ if($row['leavetype_id'] == 1){
            return true;
         }
     }
-    
+
     public function getApplicantRemarks(){
-        global $notification_desc; 
+        global $notification_desc;
 //            $sql = "select * from db_followup where insertby = '$this->empl_id'";
-        
+
             $this->string = escape($_REQUEST['string']);
             if($this->string == ""){
                 $whereString = "";
             }else{
                 $whereString = $this->string;
             }
-        
+
             $sql = "select left(f.insertDateTime, 10) as date, right(f.insertDateTime,8) as time, f.interview_company, f.follow_type, f.comments ,a.applicant_id, a.applicant_name, e.empl_name, e.empl_id, f.follow_id from db_followup f inner join db_applicant a inner join db_empl e on f.applfollow_id = a.applicant_id and e.empl_id = f.insertBy where f.insertby = '$this->empl_id' AND f.fol_status = '0' $whereString ORDER BY YEAR(date) DESC, MONTH(date) DESC, DAY(date) DESC, time DESC";
             $query = mysql_query($sql);
               $i = 0;
@@ -2140,7 +2106,7 @@ if($row['leavetype_id'] == 1){
                 $data['assign_by'][$i] = $row['assign_by'];
                 $data['insertDateTime'][$i] = $row['insertDateTime'];
                 $data['follow_type'][$i] = $notification_desc[$row['follow_type']];
-                            
+
                 $partner_id = $row['interview_company'];
                 $sql2 = "select partner_name from db_partner where partner_id = '$partner_id'";
                 $query2 = mysql_query($sql2);
@@ -2159,13 +2125,13 @@ if($row['leavetype_id'] == 1){
                 $data['time'][$i] = $row['time'];
         $i++;
         }
-        return $data;  
+        return $data;
     }
     public function getPartnerRemarks(){
 //        $sql = "select * from db_partnerfollow where insertby = '$this->empl_id'";
           $sql = "select left(p.insertDateTime, 10) as date, right(p.insertDateTime,8) as time, p.pfollow_description, pt.partner_name, e.empl_name, pt.partner_id, p.pfollow_id from db_partnerfollow p inner join db_partner pt inner join db_empl e on p.partner_id = pt.partner_id and e.empl_id = p.insertBy where p.insertBy = '$this->empl_id' ORDER BY YEAR(date) DESC, MONTH(date) DESC, DAY(date) DESC, time DESC";
         $query = mysql_query($sql);
-        
+
         $i = 0;
         while($row = mysql_fetch_array($query)){
             $data['partner_id'][$i] = $row['partner_id'];
@@ -2185,7 +2151,7 @@ if($row['leavetype_id'] == 1){
         $sql = "SELECT a.*, f.follow_id, left(f.insertDateTime, 10) as date, right(f.insertDateTime,8) as time FROM db_applicant a INNER JOIN db_followup f ON a.applicant_id = f.applfollow_id WHERE (f.follow_type = '3' or f.follow_type = '4') AND f.assign_to = '$this->empl_id' AND f.fol_status = '0' ORDER BY YEAR(date) DESC, MONTH(date) DESC, DAY(date) DESC, time DESC";
           //$sql = "select left(p.insertDateTime, 10) as date, right(p.insertDateTime,8) as time, p.pfollow_description, pt.partner_name, e.empl_name, pt.partner_id, p.pfollow_id from db_partnerfollow p inner join db_partner pt inner join db_empl e on p.partner_id = pt.partner_id and e.empl_id = p.insertBy where p.insertBy = '$this->empl_id' ORDER BY YEAR(date) DESC, MONTH(date) DESC, DAY(date) DESC, time DESC";
         $query = mysql_query($sql);
-        
+
         $i = 0;
         while($row = mysql_fetch_array($query)){
             $sql3 = "SELECT * FROM db_dashbroad_display WHERE display_type = 'active candidate' AND display_parent_id = '$row[follow_id]' AND display_empl_id = '$_SESSION[empl_id]'";
@@ -2196,7 +2162,7 @@ if($row['leavetype_id'] == 1){
                 $data['applicant_name'][$i] = $row['applicant_name'];
                 $data['applicant_mobile'][$i] = $row['applicant_mobile'];
                 $data['applicant_email'][$i] = $row['applicant_email'];
-                $data['follow_id'][$i] = $row['follow_id']; 
+                $data['follow_id'][$i] = $row['follow_id'];
                 $i++;
             }
         }
@@ -2220,9 +2186,9 @@ if($row['leavetype_id'] == 1){
                       </tr>
                     </thead>
                     <tbody>
-                    <?php                           
+                    <?php
                       $sql = "SELECT applicant.*, left(applicant.insertDateTime,10) as date, right(applicant.insertDateTime, 8) as time ,gp.group_code,dp.department_code,outl.outl_code
-                              FROM db_applicant applicant 
+                              FROM db_applicant applicant
                               INNER JOIN db_group gp ON gp.group_id = applicant.applicant_group
                               LEFT JOIN db_department dp ON dp.department_id = applicant.applicant_department
                               LEFT JOIN db_outl outl ON outl.outl_id = applicant.applicant_outlet
@@ -2236,10 +2202,10 @@ if($row['leavetype_id'] == 1){
                             <td><?php echo $i;?></td>
                             <td><?php echo $row['applicant_name'];?></td>
                             <td><?php echo $row['applicant_email'];?></td>
-                            <td><?php echo $row['applicant_mobile'];?></td>                         
+                            <td><?php echo $row['applicant_mobile'];?></td>
 <!--                            <td><?php echo $row['applicant_street'];?></td>
                             <td>
-                            <?php 
+                            <?php
                             $appl_id = $row['applicant_id'];
                             $sql2 = "SELECT empl_name from db_empl inner join db_followup on assign_to = empl_id where applfollow_id = '$appl_id' AND fol_status = '0' group by empl_name";
                             $query2 = mysql_query($sql2);
@@ -2248,9 +2214,9 @@ if($row['leavetype_id'] == 1){
                                 ?><br>
                                 <?php
                             }
-                            ?>                            
+                            ?>
                             </td>
-                            <?php 
+                            <?php
                             $insert_id = $row['insertBy'];
                             $sql3 = "select empl_name from db_empl where empl_id = '$insert_id'";
                             $query3 = mysql_query($sql3);
@@ -2258,19 +2224,19 @@ if($row['leavetype_id'] == 1){
                             ?>
                             <td><?php echo $row3['empl_name'];?></td>-->
                             <td><?php echo format_date($row['insertDateTime']) . " " . $row['time']?>
-                                
-                            <?php 
+
+                            <?php
                             $app_id = $row['applicant_id'];
                             $sql4 = "SELECT * FROM db_followup f inner join db_resume r on f.applfollow_id = r.resume_appl_id inner join db_experience e on r.resume_appl_id = e.exp_appl_id inner join db_family a on e.exp_appl_id = a.applicant_family_id inner join db_applicant p on a.applicant_family_id = p.applicant_id where p.applicant_id = '$app_id' AND f.fol_status = '0'";
                             $query4 = mysql_query($sql4);
                             $row4 = mysql_fetch_array($query4);
-                            ?>                             
-                                
-                            <input type="hidden" value = "<?php echo print_r($row4);?>"> 
+                            ?>
+
+                            <input type="hidden" value = "<?php echo print_r($row4);?>">
                             </td>
 
                             <td class = "text-align-right">
-                                <?php 
+                                <?php
                                 if(getWindowPermission($_SESSION['m'][$_SESSION['empl_id']],'view')){
                                 ?>
                                 <a href="applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row['applicant_id'];?>"><button type="button" id="Btn" class="btn btn-primary btn-warning" >Add Remarks</button></a>
@@ -2281,14 +2247,14 @@ if($row['leavetype_id'] == 1){
                                 ?>
                                 <button type="button" class="btn btn-primary btn-info " onclick = "location.href = 'applicant.php?action=edit&applicant_id=<?php echo $row['applicant_id'];?>'">Edit</button>
                                 <?php }?>
-                                <?php 
+                                <?php
                                 if(getWindowPermission($_SESSION['m'][$_SESSION['empl_id']],'delete')){
                                 ?>
                                 <button type="button" class="btn btn-primary btn-danger " onclick = "confirmAlertHref('applicant.php?action=delete&applicant_id=<?php echo $row['applicant_id'];?>','Confirm Delete?')">Delete</button>
                                 <?php }?>
                             </td>
                         </tr>
-                    <?php    
+                    <?php
                         $i++;
                       }
                     ?>
@@ -2309,7 +2275,7 @@ if($row['leavetype_id'] == 1){
                   </table>
                 </div><!-- /.box-body -->
     <?php }
-    
+
     public function getCalender(){
             ?>
        <!-- Main content -->
@@ -2323,7 +2289,7 @@ if($row['leavetype_id'] == 1){
                 </div><!-- /.box-body -->
               </div><!-- /. box -->
             </div><!-- /.col -->
-            
+
             <div class="col-md-2">
               <div class="box box-solid">
                 <div class="box-header with-border">
@@ -2340,20 +2306,20 @@ if($row['leavetype_id'] == 1){
                 </div><!-- /.box-body -->
               </div><!-- /. box -->
             </div><!-- /.col -->
-            
+
           </div><!-- /.row -->
-        </section> <!-- /.content --> 
+        </section> <!-- /.content -->
             <?php
     }
     public function getCalenderForm(){
         ?>
-        
+
 
 
   <!-- Modal -->
   <div class="modal fade" id="myModal" role="dialog">
     <div class="modal-dialog"  style="width:50%">
-    
+
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header" style="background-color: #5cb85c;">
@@ -2369,7 +2335,7 @@ if($row['leavetype_id'] == 1){
                 <label for="dateEnd" class="col-sm-3 control-label" style="margin-top: 8px;">Date End :</label>
                 <input type="text" class="form-control datepicker" id="dateEnd" name="dateEnd" value = "" placeholder="Start Date" style="width:70%"><br>
             </div>
-            
+
             <div class = "attendanceform">
 
                 <label for="timeIn" class="col-sm-3 control-label" style="margin-top: 8px;">Time In :</label>
@@ -2387,33 +2353,33 @@ if($row['leavetype_id'] == 1){
                             <i class="fa fa-clock-o"></i>
                         </div>
                     </div>
-                   <br>                 
-                
-                
+                   <br>
+
+
                 <label for="lunchHour" class="col-sm-3 control-label" style="margin-top: 8px;">Lunch Hour :</label>
                 <input type="text" class="form-control" id="lunchHour" name="lunchHour" value = "" placeholder="Eg : 1" style="width:70%"><br>
 
 
                 <label for="overtimeHour" class="col-sm-3 control-label" style="margin-top: 8px;">Overtime Hour :</label>
-                <input type="text" class="form-control" id="overtimeHour" name="overtimeHour" value = "" placeholder="Eg : 2" style="width:70%"><br>  
-                <input type="hidden" class="form-control" id="attendance_id" name="attendance_id" value = "">  
+                <input type="text" class="form-control" id="overtimeHour" name="overtimeHour" value = "" placeholder="Eg : 2" style="width:70%"><br>
+                <input type="hidden" class="form-control" id="attendance_id" name="attendance_id" value = "">
             </div>
 
             <div class ="supervisor">
                 <label for="attendance_remark" class="col-sm-3 control-label" style="margin-top: 8px;">Remark :</label>
-                <input type="text" class="form-control" id="attendance_remark" name="attendance_remark" value = "" placeholder="Remark" style="width:70%"><br>                
+                <input type="text" class="form-control" id="attendance_remark" name="attendance_remark" value = "" placeholder="Remark" style="width:70%"><br>
             </div>
 
             <div class="attendanceform1">
                 <button type="button" class="btn btn-default back" style="background-color: #5cb85c; width:120px; margin-right: 20px; font-size: larger">Back</button>
-                <button type="button" class="btn btn-default saveattendance" style="background-color: #5cb85c; width:120px; font-size: larger">Save</button>   
+                <button type="button" class="btn btn-default saveattendance" style="background-color: #5cb85c; width:120px; font-size: larger">Save</button>
             </div><br>
-            
+
             <div class="attendanceform2">
                 <button type="button" class="btn btn-default back" style="background-color: #5cb85c; width:120px; margin-right: 20px; font-size: larger">Back</button>
-                <button type="button" class="btn btn-default updateattendance" style="background-color: #5cb85c; width:120px; font-size: larger">Update</button>   
-            </div><br>            
-            
+                <button type="button" class="btn btn-default updateattendance" style="background-color: #5cb85c; width:120px; font-size: larger">Update</button>
+            </div><br>
+
             <div class ="LAbutton">
               <button type="button" class="btn btn-default leave" data-dismiss="modal" style="background-color: #5cb85c; width:120px; margin-right: 20px; font-size: larger">Leave</button>
               <button type="button" class="btn btn-default attendance" style="background-color: #5cb85c; width:120px; font-size: larger">Attendance</button>
@@ -2424,19 +2390,19 @@ if($row['leavetype_id'] == 1){
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>
-      
+
     </div>
   </div>
-       
-        
-        
+
+
+
   <?php
     }
     public function getCalendarDetail(){
         $startDate = $_GET['start'];
         $endDate = $_GET['end'];
         $id = $_SESSION['empl_id'];
-        
+
             if($_SESSION['empl_group'] == "1" || $_SESSION['empl_group'] == "-1"){
                 $sql = "SELECT * FROM db_appointment WHERE (appointment_date >= '$startDate' AND appointment_date <= '$endDate') ORDER BY appointment_time";
                     $data = array();
@@ -2447,26 +2413,26 @@ if($row['leavetype_id'] == 1){
                         $sql2 = "SELECT * FROM db_location WHERE location_id = '$row[appointment_location]'";
                         $query2 = mysql_query($sql2);
                         $row2 = mysql_fetch_array($query2);
-                       
+
                         $sql3 = "SELECT * FROM db_servicestype WHERE service_id = '$row[appointment_service_type]'";
                         $query3 = mysql_query($sql3);
                         $row3 = mysql_fetch_array($query3);
-                       
+
                         if(strpos($row['appointment_time'],"a")){
                             $row['appointment_time'] = str_replace("am", " AM", $row['appointment_time']);
                         }
                         if(strpos($row['appointment_time'],"p")){
                             $row['appointment_time'] = str_replace("pm", " PM", $row['appointment_time']);
                         }
-                        
-                        
+
+
                         $data[$i]['title'] = $row['appointment_time']. " - ".$row['appointment_end_time']. " : " .$row3['service_title'] ." - " . $row2['location_title'] ." (" . $row['appointment_name'] . ") - Confirm";
                         $data[$i]['start'] = $row['appointment_date'];
-                        $data[$i]['end'] = $row['appointment_date'];                                           
+                        $data[$i]['end'] = $row['appointment_date'];
 //                        $data[$i]['start'] = $row['appointment_date']." ".$row['appointment_time'];
-//                        $data[$i]['end'] = $row['appointment_date']." ".$row['appointment_end_time'];                                           
+//                        $data[$i]['end'] = $row['appointment_date']." ".$row['appointment_end_time'];
                         $data[$i]['url'] = "appointment.php?action=edit&appointment_id=$row[appointment_id]";
-                        
+
                         if($row['appointment_confirm'] == "0"){
                             $data[$i]['backgroundColor'] = "#0088ff";
                         }else if($row['appointment_confirm'] == "1"){
@@ -2477,12 +2443,12 @@ if($row['leavetype_id'] == 1){
                             $data[$i]['backgroundColor'] = "#fdb648";
                         }
                             $data[$i]['borderColor'] = "#000000";
-                        $i++;                    
+                        $i++;
                     }
-            }       
+            }
         return $data;
     }
-    
+
     public function saveAttendance(){
         $this->empl_id = $_SESSION['empl_id'];
         $this->attendance_time_start = format_date_database(escape($_REQUEST['datefrom']));
@@ -2508,8 +2474,8 @@ if($row['leavetype_id'] == 1){
                 }
                 else{
                     return true;
-                }     
-        }   
+                }
+        }
     }
     public function updateAttendance(){
         $this->empl_id = $_SESSION['empl_id'];
@@ -2521,7 +2487,7 @@ if($row['leavetype_id'] == 1){
         $this->timeIn = escape($_REQUEST['timein']);
         $this->timeOut = escape($_REQUEST['timeout']);
         $this->attendance_id = escape($_REQUEST['attendance_id']);
-        
+
             $sql = "SELECT * FROM db_attendance WHERE attendance_empl = '$_SESSION[empl_id]' AND attendance_date_start = '$this->attendance_time_start'";
             $query = mysql_query($sql);
             $row = mysql_num_rows($query);
@@ -2532,7 +2498,7 @@ if($row['leavetype_id'] == 1){
                                      'attendance_lunch_hour','attendance_ot_hour','attendance_timein','attendance_timeout','attendance_remark');
                 $table_value = array($this->attendance_time_start,$this->attendance_time_end,'Attendance',
                                      $this->lunchHour, $this->overtimeHour, $this->timeIn, $this->timeOut,$this->attendance_remark);
-            
+
                 $remark = "Update Attendance";
                 if(!$this->save->UpdateData($table_field,$table_value,'db_attendance','attendance_id',$remark,$this->attendance_id,"")){
                    return false;
@@ -2545,32 +2511,32 @@ if($row['leavetype_id'] == 1){
     public function getPayrollForm(){
         ?>
             <div class="col-md-9">
-                    
+
                 <!-- USERS LIST -->
                   <div class="box box-success">
                     <div class="box-header with-border">
-                        <?php   
+                        <?php
                           $today = Date('Y-m-d');
                           $month = Date('M-Y');
                         ?>
                       <h3 class="box-title">New Candidate assign to Client for this month <?php echo "( ".$month . " )"?></h3>
-                      <div class="box-tools pull-right">      
-                     <?php                       
-                      
+                      <div class="box-tools pull-right">
+                     <?php
+
                       $firstDay = date('Y-m-01', strtotime($today));
                       $lastDay = date("Y-m-t", strtotime($today));
-                      
+
                       $sql = "SELECT * FROM db_followup WHERE follow_type = '0' AND LEFT(insertDateTime,10) BETWEEN '$firstDay' AND '$lastDay' AND fol_assign_expiry_date >= '$firstDay' AND fol_available_date <= '$lastDay' AND fol_approved = 'Y' AND fol_payroll_empl = '$_SESSION[empl_id]'";
                       $query = mysql_query($sql);
                       $row = mysql_num_rows($query);
 
                       ?>
-                          
+
                         <span class="label label-success"><?php echo $row; ?> Candidate assign to Client</span>
                         <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                       </div>
                     </div><!-- /.box-header -->
-                    
+
                     <div class="box-body table-responsive">
                   <table id="otherManager_table" class="table table-bordered table-hover table-cursor">
                     <thead>
@@ -2585,13 +2551,13 @@ if($row['leavetype_id'] == 1){
                       </tr>
                     </thead>
                     <tbody>
-                    <?php                           
+                    <?php
                       $sql = "SELECT f.*,a.applicant_id, a.applicant_name, p.partner_name FROM db_followup f INNER JOIN db_applicant a ON f.applfollow_id = a.applicant_id INNER JOIN db_partner p ON p.partner_id = f.interview_company WHERE f.follow_type = '0' AND LEFT(f.insertDateTime,10) BETWEEN '$firstDay' AND '$lastDay' AND f.fol_assign_expiry_date >= '$firstDay' AND f.fol_available_date <= '$lastDay' AND f.fol_approved = 'Y' AND f.fol_payroll_empl = '$_SESSION[empl_id]'";
                       $query = mysql_query($sql);
                       $i = 1;
                       while($row = mysql_fetch_array($query)){
                     ?>
-                        <tr class='applicant_assign' pid='applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row['applicant_id'];?>&follow_id=<?php echo $row['follow_id'];?>&edit=1' > 
+                        <tr class='applicant_assign' pid='applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row['applicant_id'];?>&follow_id=<?php echo $row['follow_id'];?>&edit=1' >
                             <td><?php echo $i;?></td>
                             <td><?php echo $row['applicant_name'];?></td>
                             <td><?php echo $row['partner_name'];?></td>
@@ -2602,16 +2568,16 @@ if($row['leavetype_id'] == 1){
                                 $row3 = mysql_fetch_array($query3);
                                 echo $row3['timeshift_department'];
                                 ?>
-                            </td>     
+                            </td>
                             <td>
                                <?php echo $row['fol_position_offer']?>
-                            </td>                       
+                            </td>
                             <td><?php echo "$ ". $row['fol_offer_salary'] ?>
                             </td>
                             <td><?php echo "$ ". $row['fol_admin_fee'] ?>
                             </td>
                         </tr>
-                    <?php    
+                    <?php
                         $i++;
                       }
                     ?>
@@ -2631,30 +2597,30 @@ if($row['leavetype_id'] == 1){
 
                 </div><!-- /.box-body -->
 
-                    
+
                     <div class="box-footer text-center">
                     </div><!-- /.box-footer -->
                   </div><!--/.box -->
-            </div>  
-  
-      
-      
-  
+            </div>
+
+
+
+
             <div class="col-md-9">
-                    
+
                 <!-- USERS LIST -->
                   <div class="box box-success">
                     <div class="box-header with-border">
-                        <?php   
+                        <?php
                           $today = Date('Y-m-d');
                           $month = Date('Y-m');
                         ?>
                       <h3 class="box-title">Total Candidate</h3>
-                      <div class="box-tools pull-right">      
+                      <div class="box-tools pull-right">
                         <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                       </div>
                     </div><!-- /.box-header -->
-                    
+
                     <div class="box-body table-responsive">
                   <table id="interview_table" class="table table-bordered table-hover table-cursor">
                     <thead>
@@ -2669,13 +2635,13 @@ if($row['leavetype_id'] == 1){
                       </tr>
                     </thead>
                     <tbody>
-                    <?php                           
+                    <?php
                       $sql = "SELECT f.*,a.applicant_id, a.applicant_name, p.partner_name FROM db_followup f INNER JOIN db_applicant a ON f.applfollow_id = a.applicant_id INNER JOIN db_partner p ON p.partner_id = f.interview_company WHERE f.follow_type = '0' AND f.fol_assign_expiry_date >= '$today' AND LEFT(f.fol_available_date,7) <= '$today'  AND f.fol_payroll_empl = '$_SESSION[empl_id]' AND f.fol_approved = 'Y'";
                       $query = mysql_query($sql);
                       $i = 1;
                       while($row = mysql_fetch_array($query)){
                     ?>
-                        <tr class='applicant_assign' pid='applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row['applicant_id'];?>&follow_id=<?php echo $row['follow_id'];?>&edit=1' > 
+                        <tr class='applicant_assign' pid='applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row['applicant_id'];?>&follow_id=<?php echo $row['follow_id'];?>&edit=1' >
                             <td><?php echo $i;?></td>
                             <td><?php echo $row['applicant_name'];?></td>
                             <td><?php echo $row['partner_name'];?></td>
@@ -2686,16 +2652,16 @@ if($row['leavetype_id'] == 1){
                                 $row3 = mysql_fetch_array($query3);
                                 echo $row3['timeshift_department'];
                                 ?>
-                            </td>     
+                            </td>
                             <td>
                                <?php echo $row['fol_position_offer']?>
-                            </td>                       
+                            </td>
                             <td><?php echo "$ ". $row['fol_offer_salary'] ?>
                             </td>
                             <td><?php echo "$ ". $row['fol_admin_fee'] ?>
                             </td>
                         </tr>
-                    <?php    
+                    <?php
                         $i++;
                       }
                     ?>
@@ -2715,13 +2681,13 @@ if($row['leavetype_id'] == 1){
 
                 </div><!-- /.box-body -->
 
-                    
+
                     <div class="box-footer text-center">
                     </div><!-- /.box-footer -->
                   </div><!--/.box -->
-            </div>   
-  
-              
+            </div>
+
+
               <div class="col-md-4">
                 <div class="box box-success">
                     <div class="box-header with-border">
@@ -2729,7 +2695,7 @@ if($row['leavetype_id'] == 1){
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div><!-- /.box-header -->    
+                    </div><!-- /.box-header -->
 
                         <div class="box-body">
                           <table id="client_table" class="table table-bordered table-hover table-cursor">
@@ -2742,7 +2708,7 @@ if($row['leavetype_id'] == 1){
                               </tr>
                             </thead>
                             <tbody>
-                                <?php 
+                                <?php
                                 $i = 1;
                                 $sql = "SELECT * FROM db_partner p INNER JOIN db_empl e ON p.partner_sales_person = e.empl_id WHERE (p.partner_sales_person != '$_SESSION[empl_id]' AND e.empl_manager != '$_SESSION[empl_id]') AND partner_dashboard_display = '0'";
                                 $query = mysql_query($sql);
@@ -2767,17 +2733,17 @@ if($row['leavetype_id'] == 1){
                                                 <button type="button" class="btn btn-danger btn-client delete" pid="<?php echo $row['partner_id']?>"><i class="fa fa-dw fa-close"></i></button>
         <!--                                        <button type="button" class="btn btn-info btn-client"><i class="fa fa-dw fa-check"></i></button>-->
                                             </td>
-                                        </tr>                               
+                                        </tr>
                                     <?php $i++;
                                     }
-                                } ?>                                
+                                } ?>
                             </tbody>
-                                
-                        </table>       
+
+                        </table>
                     </div>
-            </div>       
+            </div>
           </div>
-  
+
                   <div class="col-md-7" >
                     <div class="box box-success">
                         <div class="box-header with-border">
@@ -2787,12 +2753,12 @@ if($row['leavetype_id'] == 1){
                           </div>
                         </div><!-- /.box-header -->
 
-                        <div class="box-body">   
+                        <div class="box-body">
                                     <div class="col-xs-12">
                                       <div class="box" style="padding: 10px; height:305px; overflow-y: scroll;border-top:0px;">
                                         <div class="box-header" style="background-color: #00a65a; color:#fff;">
                                           <h3 class="box-title">Candidate Detail</h3>
-                                          <div class="box-tools">          
+                                          <div class="box-tools">
                                           </div>
                                         </div><!-- /.box-header -->
                                         <div class="box-body table-responsive no-padding" id="client_applicant_content">
@@ -2802,33 +2768,33 @@ if($row['leavetype_id'] == 1){
                         </div>
                     </div>
               </div>
-  
-  
-  
-  
-  
-        <?php 
+
+
+
+
+
+        <?php
     }
-    
+
     public function getAdminDashboard(){
         ?>
         <div class = "col-md-4">
-  
+
                 <div class="box box-success">
                     <div class="box-header with-border">
                         <h3 class="box-title"><?php echo "Administrator";?></h3>
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div><!-- /.box-header -->    
+                    </div><!-- /.box-header -->
 
                         <div class="box-body no-padding">
                         <table class="table table-bordered text-center">
                             <tr>
                                 <th><h4>Manager List</h4></th>
-                            </tr>                
+                            </tr>
 
-                            <?php 
+                            <?php
                             $id = $_SESSION['empl_id'];
                             $sql = "Select * from db_empl where empl_group = '4'";
                             $query = mysql_query($sql);
@@ -2837,7 +2803,7 @@ if($row['leavetype_id'] == 1){
                                 <tr>
                                   <td>
                                       <!--<button type="button" pid="<?php echo $row['empl_id'];?>" id="Btn" class="btn btn-block btn-success btn-lg remarks"><?php echo $row['empl_name']. " - " .$row['empl_code'];?></button>-->
-                                  
+
                                       <div class="btn-group">
                                       <button type="button" pid="<?php echo $row['empl_id'];?>" class="btn btn-success btn-lg remarks" style="width:250px; height:40px;"><?php echo $row['empl_name']. " - " .$row['empl_code'];?></button>
                                       <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" style="height:40px;">
@@ -2846,28 +2812,28 @@ if($row['leavetype_id'] == 1){
                                       </button>
                                       <ul class="dropdown-menu" role="menu" style="background-color:#2dc17d; width:283px;">
                                           <li style="text-align:center">Consultant List</li>
-                                      <?php $sql2 = "SELECT * FROM db_empl WHERE empl_manager = '$row[empl_id]'";   
+                                      <?php $sql2 = "SELECT * FROM db_empl WHERE empl_manager = '$row[empl_id]'";
                                             $query2 = mysql_query($sql2);
                                             while($row2 = mysql_fetch_array($query2)){?>
                                             <li><a href="#" class ="remarks" pid="<?php echo $row2['empl_id']?>"><?php echo $row2[empl_name];?></a></li>
                                        <?php }
-                                       ?> 
+                                       ?>
                                       </ul>
-                                    </div>                                
+                                    </div>
                                   </td>
                                 </tr>
                             <?php } ?>
-                        </table>       
+                        </table>
                     </div>
-            </div>                
-            
+            </div>
+
                 <div class="box box-success">
                     <div class="box-header with-border">
                         <h3 class="box-title"><?php echo " Total Resume";?></h3>
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div><!-- /.box-header -->    
+                    </div><!-- /.box-header -->
 
                         <div class="box-body">
                           <table id="applicant_table" class="table table-bordered table-hover table-cursor">
@@ -2878,8 +2844,8 @@ if($row['leavetype_id'] == 1){
                                 <th style = 'width:5%'>Job Assign</th>
                               </tr>
                             </thead>
-                            <tbody>             
-                                <?php 
+                            <tbody>
+                                <?php
                                 $i = 1;
                                 $id = $_SESSION['empl_id'];
                                 $sql = "Select * from db_empl where empl_group = '4'";
@@ -2891,8 +2857,8 @@ if($row['leavetype_id'] == 1){
                                         <td><?php echo "Manager : " . $row['empl_name']; ?></td>
                                         <td>--</td>
                                     </tr>
-                                
-                                    <?php    
+
+                                    <?php
                                     $sql3 = "Select a.* from db_applicant a INNER JOIN db_followup f ON a.applicant_id = f.applfollow_id where (f.follow_type = '3' OR f.follow_type = '4') and f.fol_status = '0' and fol_assign_manager = '$row[empl_id]'";
                                     $query3 = mysql_query($sql3);
                                     while($row3 = mysql_fetch_array($query3)){
@@ -2903,7 +2869,7 @@ if($row['leavetype_id'] == 1){
                                         <td>
                                             <?php
                                             $today = date("Y-m-d");
-                                            $sql11 = "SELECT * FROM db_followup WHERE follow_type = '0' AND fol_assign_expiry_date >= '$today' AND fol_status = '0' AND applfollow_id = '$row3[applicant_id]'"; 
+                                            $sql11 = "SELECT * FROM db_followup WHERE follow_type = '0' AND fol_assign_expiry_date >= '$today' AND fol_status = '0' AND applfollow_id = '$row3[applicant_id]'";
                                             //echo $sql11;
                                             $query11 = mysql_query($sql11);
                                             if($row11 = mysql_fetch_array($query11)){ ?>
@@ -2913,24 +2879,24 @@ if($row['leavetype_id'] == 1){
                                                 <a href="applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row3[applicant_id];?>"><button type='button' style='background-color: #009688; border-color: #007368;width:85px;' class='btn btn-primary btn-warning'>Unassigned</button></a>
                                             <?php }
                                             ?>
-                                        </td>                                        
+                                        </td>
                                     </tr>
-                                
+
                                 <?php $i++;
                                     }
                                 }?>
                             </tbody>
-                        </table>       
+                        </table>
                     </div>
-            </div>   
-            
+            </div>
+
                 <div class="box box-success">
                     <div class="box-header with-border">
                         <h3 class="box-title"><?php echo  "Total Client";?></h3>
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div><!-- /.box-header -->    
+                    </div><!-- /.box-header -->
 
                         <div class="box-body">
                           <table id="client_table" class="table table-bordered table-hover table-cursor">
@@ -2943,7 +2909,7 @@ if($row['leavetype_id'] == 1){
                               </tr>
                             </thead>
                             <tbody>
-                                <?php 
+                                <?php
                                 $i = 1;
                                 $sql = "Select * from db_empl where empl_group = '4'";
                                 $query = mysql_query($sql);
@@ -2956,7 +2922,7 @@ if($row['leavetype_id'] == 1){
                                         <td>--</td>
                                     </tr>
                                 <?php
-                                
+
                                     $sql4 = "SELECT * FROM db_partner p INNER JOIN db_empl e ON p.partner_sales_person = e.empl_id WHERE (p.partner_sales_person = '$row[empl_id]' OR e.empl_manager = '$row[empl_id]') AND partner_dashboard_display = '0'";
                                     $query4 = mysql_query($sql4);
                                     while($row4 = mysql_fetch_array($query4)){
@@ -2980,39 +2946,39 @@ if($row['leavetype_id'] == 1){
                                                     <button type="button" class="btn btn-danger btn-client delete" pid="<?php echo $row['partner_id']?>"><i class="fa fa-dw fa-close"></i></button>
             <!--                                        <button type="button" class="btn btn-info btn-client"><i class="fa fa-dw fa-check"></i></button>-->
                                                 </td>
-                                            </tr>                               
+                                            </tr>
                                         <?php $i++;
                                         }
                                     }
                             }
-                            ?>                                
+                            ?>
                             </tbody>
-                                
-                        </table>       
+
+                        </table>
                     </div>
-            </div>             
-            
-            
+            </div>
+
+
         </div>
 
-        <?php 
+        <?php
     }
     public function getAdminDashboardBackup(){
                 $sql6 = "select empl_id, empl_name from db_empl where empl_group = '4'";
                 $query6 = mysql_query($sql6);
                 while($row6 = mysql_fetch_array($query6)){
                     ?>
-                                        
+
                     <div class="box box-success" style="border-top-color:#00a7d0">
                         <div class="box-header with-border">
                             <h3 class="box-title"><?php echo "Manager : " . $row6['empl_name'];?></h3>
                             <div class="box-tools pull-right">
                                 <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                             </div>
-                        </div><!-- /.box-header -->    
-            
+                        </div><!-- /.box-header -->
+
                         <div class="box-body no-padding">
-                        <?php 
+                        <?php
                         $id = $row6['empl_id'];
                         $sql = "Select * from db_empl where empl_group = '8' and empl_manager = '$id'";
                         $query = mysql_query($sql);
@@ -3080,10 +3046,10 @@ if($row['leavetype_id'] == 1){
 
                         <?php } ?>
                         </div>
-                    </div>                        
-                        <?php }        
+                    </div>
+                        <?php }
     }
-    
+
     public function getManagerDashboardBackup(){
         ?>      <div class = "col-md-7">
                     <div class="box box-success" style="border-top-color:#00a7d0">
@@ -3092,10 +3058,10 @@ if($row['leavetype_id'] == 1){
                             <div class="box-tools pull-right">
                                 <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                             </div>
-                        </div><!-- /.box-header -->    
-            
+                        </div><!-- /.box-header -->
+
                         <div class="box-body no-padding">
-                        <?php 
+                        <?php
                         $id = $_SESSION['empl_id'];
                         $sql = "Select * from db_empl where empl_group = '8' and empl_manager = '$id'";
                         $query = mysql_query($sql);
@@ -3163,7 +3129,7 @@ if($row['leavetype_id'] == 1){
 
                         <?php } ?>
                         </div>
-                    </div> 
+                    </div>
                 </div>
         <?php
     }
@@ -3176,15 +3142,15 @@ if($row['leavetype_id'] == 1){
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div><!-- /.box-header -->    
+                    </div><!-- /.box-header -->
 
                         <div class="box-body no-padding">
                         <table class="table table-bordered text-center">
                             <tr>
                                 <th><h4>Consultants List</h4></th>
-                            </tr>                
+                            </tr>
 
-                            <?php 
+                            <?php
                             $id = $_SESSION['empl_id'];
                             $sql = "Select * from db_empl where empl_group = '8' and empl_manager = '$id'";
                             $query = mysql_query($sql);
@@ -3193,7 +3159,7 @@ if($row['leavetype_id'] == 1){
                                 <tr>
                                   <td>
                                       <!--<button type="button" pid="<?php echo $row['empl_id'];?>" id="Btn" class="btn btn-block btn-success btn-lg remarks"><?php echo $row['empl_name']. " - " .$row['empl_code'];?></button>-->
-                                  
+
                                       <div class="btn-group">
                                       <button type="button" pid="<?php echo $row['empl_id'];?>" class="btn btn-success btn-lg remarks" style="width:250px; height:40px;"><?php echo $row['empl_name']. " - " .$row['empl_code'];?></button>
 <!--                                      <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" style="height:40px;">
@@ -3207,21 +3173,21 @@ if($row['leavetype_id'] == 1){
                                         <li class="divider"></li>
                                         <li><a href="#">Separated link</a></li>-->
                                       </ul>
-                                    </div>                                
+                                    </div>
                                   </td>
                                 </tr>
                             <?php } ?>
-                        </table>       
+                        </table>
                     </div>
             </div>
-            
+
                 <div class="box box-success">
                     <div class="box-header with-border">
                         <h3 class="box-title"><?php echo "List of candidates assigned need approver";?></h3>
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div><!-- /.box-header -->    
+                    </div><!-- /.box-header -->
 
                         <div class="box-body">
                           <table id="assigned_table" class="table table-bordered table-hover ">
@@ -3232,8 +3198,8 @@ if($row['leavetype_id'] == 1){
                                     <th style = 'width:5%'>Client Name</th>
                               </tr>
                             </thead>
-                            <tbody>             
-                                <?php 
+                            <tbody>
+                                <?php
                                 $i = 1;
                                 $id = $_SESSION['empl_id'];
                                 $sql = "Select a.*, f.*, e.* from db_applicant a INNER JOIN db_followup f ON a.applicant_id = f.applfollow_id INNER JOIN db_empl e ON e.empl_id = f.insertBy WHERE f.follow_type = '0' AND (e.empl_id = '$id' OR e.empl_manager = '$id') AND f.fol_status = '0' AND f.fol_approved = ''";
@@ -3243,23 +3209,23 @@ if($row['leavetype_id'] == 1){
                                 <tr>
                                     <td><a href="applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row[applicant_id];?>&follow_id=<?php echo $row[follow_id];?>&edit=1" style="color:red"><?php echo $i;?></a></td>
                                     <td><?php echo $row['applicant_name'];?></td>
-                                    <td><?php echo $row['empl_name'];?></td>                                        
+                                    <td><?php echo $row['empl_name'];?></td>
                                 </tr>
                             <?php $i++;
                                 } ?>
                             </tbody>
-                        </table>       
+                        </table>
                     </div>
-            </div>               
-            
-            
+            </div>
+
+
                 <div class="box box-success">
                     <div class="box-header with-border">
                         <h3 class="box-title"><?php echo $_SESSION['empl_name']." : Total Resume";?></h3>
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div><!-- /.box-header -->    
+                    </div><!-- /.box-header -->
 
                         <div class="box-body">
                           <table id="applicant_table" class="table table-bordered table-hover table-cursor">
@@ -3270,8 +3236,8 @@ if($row['leavetype_id'] == 1){
                                 <th style = 'width:5%'>Job Assign</th>
                               </tr>
                             </thead>
-                            <tbody>             
-                                <?php 
+                            <tbody>
+                                <?php
                                 $i = 1;
                                 $id = $_SESSION['empl_id'];
                                 $sql = "Select a.* from db_applicant a INNER JOIN db_followup f ON a.applicant_id = f.applfollow_id where (f.follow_type = '3' OR f.follow_type = '4') and fol_assign_manager = '$id' and f.fol_status = '0'";
@@ -3284,32 +3250,32 @@ if($row['leavetype_id'] == 1){
                                     <td>
                                         <?php
                                         $today = date("Y-m-d");
-                                        $sql11 = "SELECT * FROM db_followup WHERE follow_type = '0' AND fol_assign_expiry_date >= '$today' AND fol_status = '0' AND applfollow_id = '$row[applicant_id]' AND fol_approved = 'Y'"; 
+                                        $sql11 = "SELECT * FROM db_followup WHERE follow_type = '0' AND fol_assign_expiry_date >= '$today' AND fol_status = '0' AND applfollow_id = '$row[applicant_id]' AND fol_approved = 'Y'";
                                         //echo $sql11;
                                         $query11 = mysql_query($sql11);
                                         if($row11 = mysql_fetch_array($query11)){ ?>
                                             <a href="applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row[applicant_id];?>&follow_id=<?php echo $row11['follow_id'];?>&edit=1"><button type='button' style='background-color: #3c5bf7; border-color: #0c4da0; width:85px;' class='btn btn-primary btn-warning'>Assigned</button></a>
                                         <?php }else{ ?>
                                             <a href="applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row[applicant_id];?>"><button type='button' style='background-color: #009688; border-color: #007368;width:85px;' class='btn btn-primary btn-warning'>Unassigned</button></a>
-                                        <?php } 
+                                        <?php }
                                         ?>
-                                    </td>                                        
+                                    </td>
                                 </tr>
-                                
+
                             <?php $i++;
                                 } ?>
                             </tbody>
-                        </table>       
+                        </table>
                     </div>
-            </div>   
-  
+            </div>
+
                 <div class="box box-success">
                     <div class="box-header with-border">
                         <h3 class="box-title"><?php echo "Other Manager : Total Resume";?></h3>
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div><!-- /.box-header -->    
+                    </div><!-- /.box-header -->
 
                         <div class="box-body">
                           <table id="otherManager_table" class="table table-bordered table-hover table-cursor">
@@ -3320,8 +3286,8 @@ if($row['leavetype_id'] == 1){
                                 <th style = 'width:5%'>Job Assign</th>
                               </tr>
                             </thead>
-                            <tbody>             
-                                <?php 
+                            <tbody>
+                                <?php
                                 $i = 1;
                                 $id = $_SESSION['empl_id'];
                                 $sql = "Select a.* from db_applicant a INNER JOIN db_followup f ON a.applicant_id = f.applfollow_id where (f.follow_type = '3' OR f.follow_type = '4') and fol_assign_manager != '$id' and f.fol_status = '0'";
@@ -3334,35 +3300,35 @@ if($row['leavetype_id'] == 1){
                                     <td>
                                         <?php
                                         $today = date("Y-m-d");
-                                        $sql11 = "SELECT * FROM db_followup WHERE follow_type = '0' AND fol_assign_expiry_date >= '$today' AND fol_status = '0' AND applfollow_id = '$row[applicant_id]'"; 
+                                        $sql11 = "SELECT * FROM db_followup WHERE follow_type = '0' AND fol_assign_expiry_date >= '$today' AND fol_status = '0' AND applfollow_id = '$row[applicant_id]'";
                                         //echo $sql11;
                                         $query11 = mysql_query($sql11);
                                         if($row11 = mysql_fetch_array($query11)){ ?>
                                             <a href="applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row[applicant_id];?>&follow_id=<?php echo $row11['follow_id'];?>&edit=1"><button type='button' style='background-color: #3c5bf7; border-color: #0c4da0; width:85px;' class='btn btn-primary btn-warning'>Assigned</button></a>
                                         <?php }else{ ?>
                                             <a href="applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row[applicant_id];?>"><button type='button' style='background-color: #009688; border-color: #007368;width:85px;' class='btn btn-primary btn-warning'>Unassigned</button></a>
-                                        <?php } 
+                                        <?php }
                                         ?>
-                                    </td>                                        
+                                    </td>
                                 </tr>
-                                
+
                             <?php $i++;
                                 } ?>
                             </tbody>
-                        </table>       
+                        </table>
                     </div>
-            </div>            
-            
-            
-            
-            
+            </div>
+
+
+
+
                 <div class="box box-success">
                     <div class="box-header with-border">
                         <h3 class="box-title"><?php echo  $_SESSION['empl_name']." : Client";?></h3>
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div><!-- /.box-header -->    
+                    </div><!-- /.box-header -->
 
                         <div class="box-body">
                           <table id="client_table" class="table table-bordered table-hover table-cursor">
@@ -3374,8 +3340,8 @@ if($row['leavetype_id'] == 1){
                                 <th style = 'width:2%'></th>
                               </tr>
                             </thead>
-                            <tbody>             
-                                <?php 
+                            <tbody>
+                                <?php
                                 $i = 1;
                                 $sql = "SELECT * FROM db_partner p INNER JOIN db_empl e ON p.partner_sales_person = e.empl_id WHERE (p.partner_sales_person = '$_SESSION[empl_id]' OR e.empl_manager = '$_SESSION[empl_id]') AND partner_dashboard_display = '0'";
                                 $query = mysql_query($sql);
@@ -3400,18 +3366,18 @@ if($row['leavetype_id'] == 1){
                                                 <button type="button" class="btn btn-danger btn-client delete" data-toggle="tooltip" title="Clear" pid="<?php echo $row['partner_id']?>"><i class="fa fa-dw fa-close"></i></button>
                                                 <!--<button type="button" class="btn btn-info btn-client"><i class="fa fa-dw fa-check"></i></button>-->
                                             </td>
-                                        </tr>                               
+                                        </tr>
                                     <?php $i++;
                                     }
-                                } ?>                              
+                                } ?>
 
                                 <tr style="background-color: #49a078">
                                     <td>--</td>
                                     <td>Other Manager Client</td>
                                     <td>--</td>
                                     <td>--</td>
-                                </tr> 
-                                <?php 
+                                </tr>
+                                <?php
                                 $sql = "SELECT * FROM db_partner p INNER JOIN db_empl e ON p.partner_sales_person = e.empl_id WHERE (p.partner_sales_person != '$_SESSION[empl_id]' AND e.empl_manager != '$_SESSION[empl_id]') AND partner_dashboard_display = '0'";
                                 $query = mysql_query($sql);
                                 while($row = mysql_fetch_array($query)){
@@ -3435,22 +3401,22 @@ if($row['leavetype_id'] == 1){
                                                 <button type="button" class="btn btn-danger btn-client delete" data-toggle="tooltip" title="Clear" pid="<?php echo $row['partner_id']?>"><i class="fa fa-dw fa-close"></i></button>
         <!--                                        <button type="button" class="btn btn-info btn-client"><i class="fa fa-dw fa-check"></i></button>-->
                                             </td>
-                                        </tr>                               
+                                        </tr>
                                     <?php $i++;
                                     }
-                                } ?>                                
+                                } ?>
                             </tbody>
-                                
-                        </table>       
+
+                        </table>
                     </div>
-            </div>             
-            
-            
+            </div>
+
+
         </div>
 
         <?php
     }
-    
+
     public function getRemarkDashboard(){
         ?>
             <div class="col-md-7" >
@@ -3463,7 +3429,7 @@ if($row['leavetype_id'] == 1){
                           </div>
                         </div><!-- /.box-header -->
 
-                        <div class="box-body"> 
+                        <div class="box-body">
                                 <div class="col-xs-12">
                                   <div class="box" style="padding: 10px; height:450px; overflow-y : scroll;border-top:0px;">
                                     <div class="box-header" style="background-color: #00a65a; color:#fff;">
@@ -3477,11 +3443,11 @@ if($row['leavetype_id'] == 1){
                                     <div class="box-body table-responsive no-padding" id="pRemarks_content">
                                     </div>
                                   </div>
-                                </div> 
+                                </div>
                         </div>
-                    </div>  
+                    </div>
                 <?php } ?>
-                
+
                     <div class="box box-success">
                         <div class="box-header with-border">
                           <h3 class="box-title" id="follow_type">Latest Remarks</h3>
@@ -3490,12 +3456,12 @@ if($row['leavetype_id'] == 1){
                           </div>
                         </div><!-- /.box-header -->
 
-                        <div class="box-body">   
+                        <div class="box-body">
                                     <div class="col-xs-12">
                                       <div class="box" style="padding: 10px; height:450px; overflow-y: scroll;border-top:0px;">
                                         <div class="box-header" style="background-color: #00a65a; color:#fff;">
                                           <h3 class="box-title">Candidate Remarks</h3>
-                                          <div class="box-tools">          
+                                          <div class="box-tools">
                                           </div>
                                         </div><!-- /.box-header -->
                                         <div class="box-body table-responsive no-padding" id="aRemarks_content">
@@ -3504,7 +3470,7 @@ if($row['leavetype_id'] == 1){
                                     </div>
                         </div>
                     </div>
-                    
+
                     <div class="box box-success">
                         <div class="box-header with-border">
                           <h3 class="box-title">Client Candidate</h3>
@@ -3513,12 +3479,12 @@ if($row['leavetype_id'] == 1){
                           </div>
                         </div><!-- /.box-header -->
 
-                        <div class="box-body">   
+                        <div class="box-body">
                                     <div class="col-xs-12">
                                       <div class="box" style="padding: 10px; height:450px; overflow-y: scroll;border-top:0px;">
                                         <div class="box-header" style="background-color: #00a65a; color:#fff;">
                                           <h3 class="box-title">Candidate Detail</h3>
-                                          <div class="box-tools">          
+                                          <div class="box-tools">
                                           </div>
                                         </div><!-- /.box-header -->
                                         <div class="box-body table-responsive no-padding" id="client_applicant_content">
@@ -3527,7 +3493,7 @@ if($row['leavetype_id'] == 1){
                                     </div>
                         </div>
                     </div>
-            </div> 
+            </div>
         <?php
     }
     public function getRemarkDashboardBackup(){
@@ -3541,12 +3507,12 @@ if($row['leavetype_id'] == 1){
                           </div>
                         </div><!-- /.box-header -->
 
-                        <div class="box-body">   
+                        <div class="box-body">
                                     <div class="col-xs-12">
                                       <div class="box" style="padding: 10px; height:450px; overflow-y: scroll;border-top:0px;">
                                         <div class="box-header" style="background-color: #00a7d0; color:#fff;">
                                           <h3 class="box-title">Candidate Remarks</h3>
-                                          <div class="box-tools">          
+                                          <div class="box-tools">
                                           </div>
                                         </div><!-- /.box-header -->
                                         <div class="box-body table-responsive no-padding" id="aRemarks_content">
@@ -3564,7 +3530,7 @@ if($row['leavetype_id'] == 1){
                           </div>
                         </div><!-- /.box-header -->
 
-                        <div class="box-body"> 
+                        <div class="box-body">
                                 <div class="col-xs-12">
                                   <div class="box" style="padding: 10px; height:450px; overflow-y : scroll;border-top:0px;">
                                     <div class="box-header" style="background-color: #00a7d0; color:#fff;">
@@ -3576,30 +3542,30 @@ if($row['leavetype_id'] == 1){
                                     <div class="box-body table-responsive no-padding" id="pRemarks_content">
                                     </div>
                                   </div>
-                                </div> 
+                                </div>
                         </div>
                     </div>
-            </div>  
+            </div>
         <?php
     }
-    
+
     public function getConsultantDashboardBackup(){?>
             <div class="col-md-6">
                 <div class="col-md-12">
-                    
+
                 <!-- USERS LIST -->
                   <div class="box box-danger">
                     <div class="box-header with-border">
                       <h3 class="box-title">Latest Candidates Assign to You for last 7 days</h3>
-                      <div class="box-tools pull-right">      
-                     <?php                       
+                      <div class="box-tools pull-right">
+                     <?php
                      $a = 0;
                      $i = 0;
                       $empl_id = $_SESSION['empl_id'];
                       $sql = "SELECT applicant.*, LEFT(follow.insertDateTime, 10) as Date, right(follow.insertDateTime, 8) as Time FROM db_applicant applicant join db_followup follow on applicant_id = applfollow_id and assign_to = '$empl_id' AND fol_status = '0' ORDER BY YEAR(date) DESC, MONTH(date) DESC, DAY(date) DESC, time DESC";
                       $query = mysql_query($sql);
                       while($row = mysql_fetch_array($query)){
-                     
+
                         $nowDate = date("Y-m-d");
                         $assignDate = $row['Date'];
 
@@ -3609,22 +3575,22 @@ if($row['leavetype_id'] == 1){
                         $day = $interval->format('%a');
                         if($day <= "7"){
                             $i++;
-                        }   
+                        }
                       }?>
-                          
+
                         <span class="label label-danger"><?php echo $i; ?> New Candidates</span>
                         <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                       </div>
                     </div><!-- /.box-header -->
-                    
+
                     <div class="box-body no-padding">
                       <ul class="users-list clearfix">
-                    <?php                       
+                    <?php
                       $empl_id = $_SESSION['empl_id'];
                       $sql = "SELECT applicant.*, LEFT(follow.insertDateTime, 10) as Date, right(follow.insertDateTime, 8) as Time FROM db_applicant applicant join db_followup follow on applicant_id = applfollow_id and assign_to = '$empl_id' AND fol_status = '0' ORDER BY YEAR(date) DESC, MONTH(date) DESC, DAY(date) DESC, time DESC";
                       $query = mysql_query($sql);
                       while($row = mysql_fetch_array($query)){
-                     
+
                         $nowDate = date("Y-m-d");
                         $assignDate = $row['Date'];
 
@@ -3633,7 +3599,7 @@ if($row['leavetype_id'] == 1){
                         $interval = date_diff($datetime1, $datetime2);
                         $day = $interval->format('%a');
                         if($day <= "7"){
-                        ?>  
+                        ?>
                             <li>
                                 <img src="<?php echo "dist/images/applicant/".$row['applicant_id'].".png"?>" alt="User Image" style="width:120px; height:120px">
                                 <a class="users-list-name" href="applicant.php?action=edit&applicant_id=171"><?php echo $row['applicant_name']?></a>
@@ -3649,25 +3615,25 @@ if($row['leavetype_id'] == 1){
                   </div><!--/.box -->
                 </div>
             </div>
-            
-            
-            
-            
-            
+
+
+
+
+
             <div class="col-md-6">
                 <div class="col-md-12">
-                    
+
                 <!-- USERS LIST -->
                   <div class="box box-danger">
                     <div class="box-header with-border">
                       <h3 class="box-title">Job Assign to You for last 30 days</h3>
-                      <div class="box-tools pull-right">      
-                     <?php                       
+                      <div class="box-tools pull-right">
+                     <?php
                       $empl_id = $_SESSION['empl_id'];
                       $sql = "SELECT *, LEFT(insertDateTime,10) AS Date, right(insertDateTime, 8) as Time FROM db_jobs where job_person_incharge = '$empl_id' AND job_delete = '0' ORDER BY YEAR(date) DESC, MONTH(date) DESC, DAY(date) DESC, time DESC";
                       $query = mysql_query($sql);
                       while($row = mysql_fetch_array($query)){
-                     
+
                         $nowDate = date("Y-m-d");
                         $assignDate = $row['Date'];
 
@@ -3675,17 +3641,17 @@ if($row['leavetype_id'] == 1){
                         $datetime2 = date_create($nowDate);
                         $interval = date_diff($datetime1, $datetime2);
                         $day = $interval->format('%a');
-                        
+
                         if($day <= "30"){
                             $a++;
-                        }   
+                        }
                       }?>
-                          
+
                         <span class="label label-danger"><?php echo $a; ?> New Jobs</span>
                         <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                       </div>
                     </div><!-- /.box-header -->
-                    
+
                     <div class="box-body table-responsive">
                   <table id="job_table" class="table table-bordered table-hover">
                     <thead>
@@ -3699,7 +3665,7 @@ if($row['leavetype_id'] == 1){
                       </tr>
                     </thead>
                     <tbody>
-                    <?php                           
+                    <?php
                       $sql = "SELECT *, LEFT(insertDateTime,10) AS Date, RIGHT(insertDateTime, 8) AS Time FROM db_jobs where job_person_incharge = '$empl_id' AND job_delete = '0' ORDER BY YEAR(date) DESC, MONTH(date) DESC, DAY(date) DESC, time DESC";
                       $query = mysql_query($sql);
                       $i = 1;
@@ -3721,17 +3687,17 @@ if($row['leavetype_id'] == 1){
                                 $row3 = mysql_fetch_array($query3);
                                 echo $row3['partner_name'];
                                 ?>
-                            </td>     
+                            </td>
                             <td>
                                <?php if ($row['job_status'] == "P"){ echo "Public";}
                                 else if($row['job_status'] == "D"){ echo "Draft";}
                                 else {echo "Close";}?>
-                            </td>                       
-                            <td><?php echo format_date($row['Date']) . " " . $row['Time']?>     
-                            <input type="hidden" value = "<?php echo print_r($row);?>"> 
+                            </td>
+                            <td><?php echo format_date($row['Date']) . " " . $row['Time']?>
+                            <input type="hidden" value = "<?php echo print_r($row);?>">
                             </td>
                         </tr>
-                    <?php    
+                    <?php
                         $i++;
                       }
                     ?>
@@ -3750,37 +3716,37 @@ if($row['leavetype_id'] == 1){
 
                 </div><!-- /.box-body -->
 
-                    
+
                     <div class="box-footer text-center">
                     </div><!-- /.box-footer -->
                   </div><!--/.box -->
                 </div>
-            </div>          
+            </div>
 
-            
-            
+
+
 
             <div class="col-md-6">
                 <div class="col-md-12">
-                    
+
                 <!-- USERS LIST -->
                   <div class="box box-danger">
                     <div class="box-header with-border">
                       <h3 class="box-title">Candidate interview today</h3>
-                      <div class="box-tools pull-right">      
-                     <?php                       
+                      <div class="box-tools pull-right">
+                     <?php
                       $empl_id = $_SESSION['empl_id'];
                       $sql = "SELECT * FROM db_followup WHERE follow_type = '2' AND interview_date = '$todayDate' AND insertBy = '$empl_id' AND fol_status = '0'";
                       $query = mysql_query($sql);
                       $row = mysql_num_rows($query);
 
                       ?>
-                          
+
                         <span class="label label-danger"><?php echo $row; ?> candidate interview today</span>
                         <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                       </div>
                     </div><!-- /.box-header -->
-                    
+
                     <div class="box-body table-responsive">
                   <table id="interview_table" class="table table-bordered table-hover">
                     <thead>
@@ -3794,14 +3760,14 @@ if($row['leavetype_id'] == 1){
                       </tr>
                     </thead>
                     <tbody>
-                    <?php                           
+                    <?php
                         $today = Date('Y-m-d');
                       $sql = "SELECT f.*,a.applicant_id, a.applicant_name, a.applicant_mobile FROM db_followup f INNER JOIN db_applicant a ON f.applfollow_id = a.applicant_id WHERE f.follow_type = '2' AND f.interview_date = '$today' AND f.insertBy = '$empl_id' AND f.fol_status = '0'";
                       $query = mysql_query($sql);
                       $i = 1;
                       while($row = mysql_fetch_array($query)){
                     ?>
-                        <tr class='applicant_follow' pid='applicant.php?action=edit&applicant_id=<?php echo $row['applicant_id'];?>&current_tab=followup&follow_id=<?php echo $row['follow_id'];?>' > 
+                        <tr class='applicant_follow' pid='applicant.php?action=edit&applicant_id=<?php echo $row['applicant_id'];?>&current_tab=followup&follow_id=<?php echo $row['follow_id'];?>' >
                             <td><?php echo $i;?></td>
                             <td><?php echo $row['applicant_name'];?></td>
                             <td><?php echo $row['applicant_mobile'];?></td>
@@ -3812,14 +3778,14 @@ if($row['leavetype_id'] == 1){
                                 $row3 = mysql_fetch_array($query3);
                                 echo $row3['partner_name'];
                                 ?>
-                            </td>     
+                            </td>
                             <td>
                                <?php echo $row['fol_position_offer']?>
-                            </td>                       
+                            </td>
                             <td><?php echo $row['interview_time'] ?>
                             </td>
                         </tr>
-                    <?php    
+                    <?php
                         $i++;
                       }
                     ?>
@@ -3838,13 +3804,13 @@ if($row['leavetype_id'] == 1){
 
                 </div><!-- /.box-body -->
 
-                    
+
                     <div class="box-footer text-center">
                     </div><!-- /.box-footer -->
                   </div><!--/.box -->
                 </div>
-            </div>    
-  
+            </div>
+
     <?php
     }
     public function getConsultantDashboard(){
@@ -3857,7 +3823,7 @@ if($row['leavetype_id'] == 1){
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div><!-- /.box-header -->    
+                    </div><!-- /.box-header -->
 
                         <div class="box-body">
                           <table id="client_table" class="table table-bordered table-hover">
@@ -3870,8 +3836,8 @@ if($row['leavetype_id'] == 1){
                                 <th style = 'width:2%'></th>
                               </tr>
                             </thead>
-                            <tbody>             
-                                <?php 
+                            <tbody>
+                                <?php
                                 $i = 1;
                                 $sql = "SELECT applicant.*, LEFT(follow.insertDateTime, 10) as Date, right(follow.insertDateTime, 8) as Time FROM db_applicant applicant join db_followup follow on applicant_id = applfollow_id WHERE follow.follow_type AND follow.assign_to = '$_SESSION[empl_id]' AND follow.fol_status = '0' ORDER BY YEAR(date) DESC, MONTH(date) DESC, DAY(date) DESC, time DESC";
                                 $query = mysql_query($sql);
@@ -3890,22 +3856,22 @@ if($row['leavetype_id'] == 1){
                                                 <button type="button" class="btn btn-danger btn-client delete-applicant"  data-toggle="tooltip" title="Clear" pid="<?php echo $row['applicant_id']?>"><i class="fa fa-dw fa-close"></i></button>
                                                 <!--<button type="button" class="btn btn-info btn-client"><i class="fa fa-dw fa-check"></i></button>-->
                                             </td>
-                                        </tr>                               
+                                        </tr>
                                     <?php $i++;
                                     }
-                                } ?>                             
+                                } ?>
                             </tbody>
-                        </table>       
+                        </table>
                     </div>
-                </div> 
-            
+                </div>
+
 <!--                <div class="box box-success">
                     <div class="box-header with-border">
                         <h3 class="box-title"><?php echo $_SESSION['empl_name']." : Total Resume";?></h3>
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div> /.box-header     
+                    </div> /.box-header
 
                         <div class="box-body">
                           <table id="applicant_table" class="table table-bordered table-hover table-cursor">
@@ -3916,8 +3882,8 @@ if($row['leavetype_id'] == 1){
                                 <th style = 'width:5%'>Job Assign</th>
                               </tr>
                             </thead>
-                            <tbody>             
-                                <?php 
+                            <tbody>
+                                <?php
                                 $i = 1;
                                 $id = $_SESSION['empl_id'];
                                 $sql = "Select a.* from db_applicant a INNER JOIN db_followup f ON a.applicant_id = f.applfollow_id where (f.follow_type = '3' OR f.follow_type = '4') and assign_to = '$id' and f.fol_status = '0'";
@@ -3930,25 +3896,25 @@ if($row['leavetype_id'] == 1){
                                     <td>
                                         <?php
                                         $today = date("Y-m-d");
-                                        $sql11 = "SELECT * FROM db_followup WHERE follow_type = '0' AND fol_assign_expiry_date >= '$today' AND fol_status = '0' AND applfollow_id = '$row[applicant_id]'"; 
+                                        $sql11 = "SELECT * FROM db_followup WHERE follow_type = '0' AND fol_assign_expiry_date >= '$today' AND fol_status = '0' AND applfollow_id = '$row[applicant_id]'";
                                         //echo $sql11;
                                         $query11 = mysql_query($sql11);
                                         if($row11 = mysql_fetch_array($query11)){ ?>
                                             <a href="applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row[applicant_id];?>&follow_id=<?php echo $row11['follow_id'];?>&edit=1"><button type='button' style='background-color: #3c5bf7; border-color: #0c4da0; width:85px;' class='btn btn-primary btn-warning'>Assigned</button></a>
                                         <?php }else{ ?>
                                             <a href="applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row[applicant_id];?>"><button type='button' style='background-color: #009688; border-color: #007368;width:85px;' class='btn btn-primary btn-warning'>Unassigned</button></a>
-                                        <?php } 
+                                        <?php }
                                         ?>
-                                    </td>                                        
+                                    </td>
                                 </tr>
-                                
+
                             <?php $i++;
                                 } ?>
-                            </tbody>                           
-                        </table>       
+                            </tbody>
+                        </table>
                     </div>
             </div>   -->
-            
+
             <?php $sql = "SELECT empl_manager FROM db_empl WHERE empl_id = '$id'";
                   $query = mysql_query($sql);
                   $row = mysql_fetch_array($query);
@@ -3958,14 +3924,14 @@ if($row['leavetype_id'] == 1){
                   $row = mysql_fetch_array($query);
                   $manager_name = $row['empl_name'];
             ?>
-            
+
                 <div class="box box-success">
                     <div class="box-header with-border">
                         <h3 class="box-title"><?php echo " Manager : ".$manager_name. " - Total Resume";?></h3>
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div><!-- /.box-header -->    
+                    </div><!-- /.box-header -->
 
                         <div class="box-body">
                           <table id="applicant_table" class="table table-bordered table-hover table-cursor">
@@ -3976,8 +3942,8 @@ if($row['leavetype_id'] == 1){
                                 <th style = 'width:5%'>Job Assign</th>
                               </tr>
                             </thead>
-                            <tbody>             
-                                <?php 
+                            <tbody>
+                                <?php
                                 $i = 1;
                                 $id = $_SESSION['empl_id'];
                                 $sql = "Select a.* from db_applicant a INNER JOIN db_followup f ON a.applicant_id = f.applfollow_id where (f.follow_type = '3' OR f.follow_type = '4') and fol_assign_manager = '$manager_id' and f.fol_status = '0'";
@@ -3990,33 +3956,33 @@ if($row['leavetype_id'] == 1){
                                     <td>
                                         <?php
                                         $today = date("Y-m-d");
-                                        $sql11 = "SELECT * FROM db_followup WHERE follow_type = '0' AND fol_assign_expiry_date >= '$today' AND fol_status = '0' AND applfollow_id = '$row[applicant_id]'"; 
+                                        $sql11 = "SELECT * FROM db_followup WHERE follow_type = '0' AND fol_assign_expiry_date >= '$today' AND fol_status = '0' AND applfollow_id = '$row[applicant_id]'";
                                         //echo $sql11;
                                         $query11 = mysql_query($sql11);
                                         if($row11 = mysql_fetch_array($query11)){ ?>
                                             <a href="applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row[applicant_id];?>&follow_id=<?php echo $row11['follow_id'];?>&edit=1"><button type='button' style='background-color: #3c5bf7; border-color: #0c4da0; width:85px;' class='btn btn-primary btn-warning'>Assigned</button></a>
                                         <?php }else{ ?>
                                             <a href="applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row[applicant_id];?>"><button type='button' style='background-color: #009688; border-color: #007368;width:85px;' class='btn btn-primary btn-warning'>Unassigned</button></a>
-                                        <?php } 
+                                        <?php }
                                         ?>
-                                    </td>                                        
+                                    </td>
                                 </tr>
-                                
+
                             <?php $i++;
                                 } ?>
                             </tbody>
-                        </table>       
+                        </table>
                     </div>
             </div>
-            
-            
+
+
                 <div class="box box-success">
                     <div class="box-header with-border">
                         <h3 class="box-title"><?php echo "Other Manager : Total Resume";?></h3>
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div><!-- /.box-header -->    
+                    </div><!-- /.box-header -->
 
                         <div class="box-body">
                           <table id="otherManager_table" class="table table-bordered table-hover table-cursor">
@@ -4027,8 +3993,8 @@ if($row['leavetype_id'] == 1){
                                 <th style = 'width:5%'>Job Assign</th>
                               </tr>
                             </thead>
-                            <tbody>             
-                                <?php 
+                            <tbody>
+                                <?php
                                 $i = 1;
                                 $id = $_SESSION['empl_id'];
                                 $sql = "Select a.* from db_applicant a INNER JOIN db_followup f ON a.applicant_id = f.applfollow_id where (f.follow_type = '3' OR f.follow_type = '4') and fol_assign_manager != '$manager_id' and f.fol_status = '0'";
@@ -4041,35 +4007,35 @@ if($row['leavetype_id'] == 1){
                                     <td>
                                         <?php
                                         $today = date("Y-m-d");
-                                        $sql11 = "SELECT * FROM db_followup WHERE follow_type = '0' AND fol_assign_expiry_date >= '$today' AND fol_status = '0' AND applfollow_id = '$row[applicant_id]'"; 
+                                        $sql11 = "SELECT * FROM db_followup WHERE follow_type = '0' AND fol_assign_expiry_date >= '$today' AND fol_status = '0' AND applfollow_id = '$row[applicant_id]'";
                                         //echo $sql11;
                                         $query11 = mysql_query($sql11);
                                         if($row11 = mysql_fetch_array($query11)){ ?>
                                             <a href="applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row[applicant_id];?>&follow_id=<?php echo $row11['follow_id'];?>&edit=1"><button type='button' style='background-color: #3c5bf7; border-color: #0c4da0; width:85px;' class='btn btn-primary btn-warning'>Assigned</button></a>
                                         <?php }else{ ?>
                                             <a href="applicant.php?action=edit&current_tab=followup&applicant_id=<?php echo $row[applicant_id];?>"><button type='button' style='background-color: #009688; border-color: #007368;width:85px;' class='btn btn-primary btn-warning'>Unassigned</button></a>
-                                        <?php } 
+                                        <?php }
                                         ?>
-                                    </td>                                        
+                                    </td>
                                 </tr>
-                                
+
                             <?php $i++;
                                 } ?>
                             </tbody>
-                        </table>       
+                        </table>
                     </div>
-            </div>            
-            
-            
-            
-            
+            </div>
+
+
+
+
                 <div class="box box-success">
                     <div class="box-header with-border">
                         <h3 class="box-title"><?php echo  $_SESSION['empl_name']." : Client";?></h3>
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                         </div>
-                    </div><!-- /.box-header -->    
+                    </div><!-- /.box-header -->
 
                         <div class="box-body">
                           <table id="consultant_client_table" class="table table-bordered table-hover table-cursor">
@@ -4081,8 +4047,8 @@ if($row['leavetype_id'] == 1){
                                 <th style = 'width:2%'></th>
                               </tr>
                             </thead>
-                            <tbody>             
-                                <?php 
+                            <tbody>
+                                <?php
                                 $i = 1;
                                 $sql = "SELECT * FROM db_partner p INNER JOIN db_empl e ON p.partner_sales_person = e.empl_id WHERE (p.partner_sales_person = '$_SESSION[empl_id]' OR e.empl_manager = '$_SESSION[empl_id]')";
                                 $query = mysql_query($sql);
@@ -4108,18 +4074,18 @@ if($row['leavetype_id'] == 1){
                                                 <button type="button" class="btn btn-danger btn-client delete"  data-toggle="tooltip" title="Clear"  pid="<?php echo $row['partner_id']?>"><i class="fa fa-dw fa-close"></i></button>
                                                 <!--<button type="button" class="btn btn-info btn-client"><i class="fa fa-dw fa-check"></i></button>-->
                                             </td>
-                                        </tr>                               
+                                        </tr>
                                     <?php $i++;
                                     }
-                                } ?>                           
+                                } ?>
 
                                 <tr style="background-color: #49a078">
                                     <td>--</td>
                                     <td>Own Manager Client</td>
                                     <td>--</td>
                                     <td>--</td>
-                                </tr> 
-                                <?php 
+                                </tr>
+                                <?php
                                     $sql = "SELECT * FROM db_partner p INNER JOIN db_empl e ON p.partner_sales_person = e.empl_id WHERE p.partner_sales_person != '$_SESSION[empl_id]' AND (e.empl_manager = '$manager' or p.partner_sales_person = '$manager')";
                                     $query = mysql_query($sql);
                                     while($row = mysql_fetch_array($query)){
@@ -4143,19 +4109,19 @@ if($row['leavetype_id'] == 1){
                                                     <button type="button" class="btn btn-danger btn-client delete"  data-toggle="tooltip" title="Clear" pid="<?php echo $row['partner_id']?>"><i class="fa fa-dw fa-close"></i></button>
             <!--                                        <button type="button" class="btn btn-info btn-client"><i class="fa fa-dw fa-check"></i></button>-->
                                                 </td>
-                                            </tr>                               
+                                            </tr>
                                         <?php $i++;
                                         }
-                                    } 
-                                ?>                                
+                                    }
+                                ?>
 
                                 <tr style="background-color: #49a078">
                                     <td>--</td>
                                     <td>Other Manager Client</td>
                                     <td>--</td>
                                     <td>--</td>
-                                </tr> 
-                                <?php 
+                                </tr>
+                                <?php
                                 $sql = "SELECT * FROM db_partner p INNER JOIN db_empl e ON p.partner_sales_person = e.empl_id WHERE p.partner_sales_person != '$_SESSION[empl_id]' AND (e.empl_manager != '$manager' AND p.partner_sales_person != '$manager')";
                                 $query = mysql_query($sql);
                                 while($row = mysql_fetch_array($query)){
@@ -4179,36 +4145,36 @@ if($row['leavetype_id'] == 1){
                                                 <button type="button" class="btn btn-danger btn-client delete" data-toggle="tooltip" title="Clear"  pid="<?php echo $row['partner_id']?>"><i class="fa fa-dw fa-close"></i></button>
         <!--                                        <button type="button" class="btn btn-info btn-client"><i class="fa fa-dw fa-check"></i></button>-->
                                             </td>
-                                        </tr>                               
+                                        </tr>
                                     <?php $i++;
                                     }
-                                } ?>                                
+                                } ?>
                             </tbody>
-                                
-                        </table>       
+
+                        </table>
                     </div>
-                </div>             
-            
-            
+                </div>
+
+
         </div>
 
         <?php
     }
-    
+
     public function getRemarks(){
         $applicant_id = escape($_REQUEST['applicant_id']);
         $sql = "select a.*,f.*, f.follow_id, f.assign_to, f.interview_company, f.follow_type, left(f.insertDateTime,10) as date, right(f.insertDateTime, 8) as time, f.interview_company, f.received_offer, f.comments, e.empl_name from db_followup f inner join db_empl e on f.insertBy = e.empl_id inner join db_applicant a on a.applicant_id = f.applfollow_id where f.applfollow_id = '$applicant_id' and f.fol_status = '0' ORDER BY YEAR(date) DESC, MONTH(date) DESC, DAY(date) DESC, time DESC";
         $query = mysql_query($sql);
-        
+
         $i = 0;
         while($row = mysql_fetch_array($query)){
-            
+
                 $data['applicant_id'][$i] = $applicant_id;
                 $data['applicant_name'][$i] = $row['applicant_name'];
                 $data['follow_id'][$i] = $row['follow_id'];
                 $data['edit'][$i] = "1";
                 if ($row['follow_type']=="0"){
-                $data['follow_type'][$i] = "Assign to Client";  
+                $data['follow_type'][$i] = "Assign to Client";
                 }
                 if ($row['follow_type']=="1"){
                 $data['follow_type'][$i] =  "Candidate Follow Up";
@@ -4222,7 +4188,7 @@ if($row['leavetype_id'] == 1){
                 if ($row['follow_type']=="4"){
                 $data['follow_type'][$i] =  "Assign New Candidate to Own";
                 }
-                
+
                 if($row['follow_type'] == "0")
                 {
                     if($row['fol_approved'] == "Y"){$data['status'][$i] = "Approved";}
@@ -4230,12 +4196,12 @@ if($row['leavetype_id'] == 1){
                     //if($row['fol_approved'] == "0"){echo "Pending";}
                     else $data['status'][$i] = "Pending";
                 }
-                else if($row['follow_type'] == "2")  
+                else if($row['follow_type'] == "2")
                 {
                     $data['status'][$i] = "Interview";
                 }
                 else {$data['status'][$i] = "-";}
-                
+
                 $id = $row['assign_to'];
                 $sql2 = "select empl_name as assign_to from db_empl where empl_id = '$id' group by empl_name";
                 $query2 = mysql_query($sql2);
@@ -4257,12 +4223,12 @@ if($row['leavetype_id'] == 1){
                 $row3 = mysql_fetch_array($query3);
                 if ($row3['partner_name'] != "" || $row3['partner_name'] != null){
                     $data['interview_company'][$i] = $row3['partner_name'];
-                }        
+                }
                 else{
                     $data['interview_company'][$i] = "-";
                 }
                 if ($row['received_offer']=="0"){
-                $data['received_offer'][$i] = "Pending";        
+                $data['received_offer'][$i] = "Pending";
                 }
                 else if ($row['received_offer']=="1"){
                 $data['received_offer'][$i] =  "Yes";
@@ -4286,62 +4252,62 @@ if($row['leavetype_id'] == 1){
     }
     public function getClientApplicant(){
         $client_id = escape($_REQUEST['client_id']);
-        
+
         $sql = "SELECT a.* FROM db_followup f INNER JOIN db_partner p ON f.interview_company = p.partner_id INNER JOIN db_applicant a ON a.applicant_id = f.applfollow_id WHERE f.follow_type = '0' AND f.fol_status = '0' AND f.interview_company = '$client_id'";
         $query = mysql_query($sql);
         $i = 0;
         while($row = mysql_fetch_array($query)){
-            
+
             $data['applicant_id'][$i] = $row['applicant_id'];
             $data['applicant_name'][$i] = $row['applicant_name'];
             $data['applicant_email'][$i] = $row['applicant_email'];
             $data['applicant_mobile'][$i] = $row['applicant_mobile'];
             $i++;
         }
-        
+
         return $data;
     }
-    
+
     public function updateDashboardDisplay(){
         $follow_id = escape($_REQUEST['follow_id']);
         $type = "active candidate";
         $table_field = array('display_status','display_parent_id','display_type','display_empl_group','display_empl_id');
         $table_value = array(1,$follow_id, $type, $_SESSION['empl_group'],$_SESSION['empl_id']);
-   
+
         $remark = "Create partner dashboard display";
         if(!$this->save->SaveData($table_field,$table_value,'db_dashbroad_display','display_id',$remark)){
            return false;
         }else{
            return true;
-        }   
-        
-        
+        }
+
+
     }
     public function updatePartnerDashboardDisplay(){
         $partner_id = escape($_REQUEST['partner_id']);
         $type = "partner table";
         $table_field = array('display_status','display_parent_id','display_type','display_empl_group','display_empl_id');
         $table_value = array(1,$partner_id,$type,$_SESSION['empl_group'],$_SESSION['empl_id']);
-   
+
         $remark = "Create partner dashboard display";
         if(!$this->save->SaveData($table_field,$table_value,'db_dashbroad_display','display_id',$remark)){
            return false;
         }else{
            return true;
-        }   
+        }
     }
     public function updateApplicantDashboardDisplay(){
         $partner_id = escape($_REQUEST['partner_id']);
         $type = "new assign table";
         $table_field = array('display_status','display_parent_id','display_type','display_empl_group','display_empl_id');
         $table_value = array(1,$partner_id,$type,$_SESSION['empl_group'],$_SESSION['empl_id']);
-   
+
         $remark = "Create partner dashboard display";
         if(!$this->save->SaveData($table_field,$table_value,'db_dashbroad_display','display_id',$remark)){
            return false;
         }else{
            return true;
-        }   
-    }    
+        }
+    }
 }
 ?>
