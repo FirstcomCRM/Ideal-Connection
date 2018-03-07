@@ -21,15 +21,49 @@ class Booking {
     public function create(){
         $duration = $this->getDuration($this->book_service_type);
         $endtime = $this->calculationEndTime($this->book_time, $duration);
-        $table_field = array('book_name','book_telephone','book_email','book_location','book_date','book_time',
+    /*    $table_field = array('book_name','book_telephone','book_email','book_location','book_date','book_time',
                              'book_service_type','book_nric','book_confirm','book_incharge_person','book_end_time','book_remarks','book_address','book_salesperson');
         $table_value = array($this->book_name,$this->book_telephone,$this->book_email,$this->book_location, format_date_database($this->book_date),$this->book_time,
                              $this->book_service_type,$this->book_nric,1,$this->book_incharge_person,$endtime,$this->book_remarks,$this->book_address,$this->book_salesperson);
+    */
+        $table_field = [
+          'book_name',
+          'book_telephone',
+          'book_email',
+          'book_location',
+          'book_date',
+          'book_time',
+          'book_service_type',
+          'book_nric',
+          'book_confirm',
+          'book_incharge_person',
+          'book_end_time',
+          'book_remarks',
+          'book_address',
+          'book_salesperson',
+          'book_booth_id',
+        ];
+
+        $table_value = [
+          $this->book_name,
+          $this->book_telephone,
+          $this->book_email,
+          $this->book_location,
+          format_date_database($this->book_date),
+          $this->book_time,
+          $this->book_service_type,
+          $this->book_nric,
+          1,
+          $this->book_incharge_person,
+          $endtime,
+          $this->book_remarks,
+          $this->book_address,
+          $this->book_salesperson,
+          $this->book_booth_id,
+        ];
+
         $remark = "Insert Booking.";
-      /*  echo '<pre>';
-        print_r($table_field);
-        print_r($table_value);
-        die();*/
+
         if(!$this->save->SaveData($table_field,$table_value,'db_booking','book_id',$remark)){
            return false;
         }else{
@@ -43,7 +77,8 @@ class Booking {
         $table_value = array($this->appointment_name,$this->appointment_telephone,$this->appointment_email,$this->appointment_location, format_date_database($this->appointment_date),$this->appointment_time,
                              $this->appointment_service_type,$this->appointment_person,$this->appointment_nric,$this->appointment_incharge_person,$this->appointment_remarks,$this->appointment_end_time,$this->appointment_address);
     */
-       $table_field = array(
+
+       $table_field = [
          'book_name',
          'book_telephone',
          'book_email',
@@ -57,23 +92,28 @@ class Booking {
          'book_remarks',
          'book_end_time',
          'book_address',
-         'book_salesperson');
+         'book_salesperson',
+         'book_booth_id',
+       ];
 
-       $table_value = array(
-         $this->book_name,
-         $this->book_telephone,
-         $this->book_email,
-         $this->book_location,
-         format_date_database($this->book_date),
-         $this->book_time,
-         $this->book_service_type,
-         $this->book_person,
-         $this->book_nric,
-         $this->book_incharge_person,
-         $this->book_remarks,
-         $this->book_end_time,
-         $this->book_address,
-         $this->book_salesperson);
+
+        $table_value = [
+          $this->book_name,
+          $this->book_telephone,
+          $this->book_email,
+          $this->book_location,
+          format_date_database($this->book_date),
+          $this->book_time,
+          $this->book_service_type,
+          $this->book_person,
+          $this->book_nric,
+          $this->book_incharge_person,
+          $this->book_remarks,
+          $this->book_end_time,
+          $this->book_address,
+          $this->book_salesperson,
+          $this->book_booth_id
+        ];
 
         $remark = "Update Booking.";
         if(!$this->save->UpdateData($table_field,$table_value,'db_booking','book_id',$remark,$this->book_id)){
@@ -102,6 +142,7 @@ class Booking {
             $this->book_remarks = $row['book_remarks'];
             $this->book_address = $row['book_address'];
             $this->book_salesperson = $row['book_salesperson'];
+            $this->book_booth_id = $row['book_booth_id'];
         }
         return $query;
     }
@@ -115,7 +156,7 @@ class Booking {
         $this->appointment_servicetypeCrtl = $this->select->getServiceTypeSelectCtrl($this->book_service_type);
         $this->appointment_locationCrtl = $this->select->getLocationSelectCtrl($this->book_location);
         $this->salesperson = $this->select->getSalesPerson($this->book_salesperson);
-
+        $this->booths = $this->select->getBooth($this->book_booth_id);
         //Not exisiting causing error and that said error not being displayed
       //  $this->appointment_inchargePersonCrtl = $this->select->getPersonInchargeCtrl($this->appointment_incharge_person);
     ?>
@@ -220,6 +261,15 @@ class Booking {
                            <select class="form-control select2" id="book_salesperson" name="book_salesperson" style = 'width:100%' <?php if($view == 1){echo "disabled"; }?>>
                                   <?php echo $this->salesperson;?>
                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="appointment_incharge_person" class="col-sm-2 control-label">Booth </label>
+                          <div class="col-sm-3">
+                           <select class="form-control select2" id="book_booth_id" name="book_booth_id" style = 'width:100%' <?php if($view == 1){echo "disabled"; }?>>
+                                  <?php echo $this->booths;?>
+                           </select>
+
                           </div>
                         </div>
                     <?php if($this->book_id > 0){?>
@@ -503,7 +553,7 @@ class Booking {
 
                 }
             });
-        
+
         //    var data = "action=confirmedAppointment&appointment_array="+book_id+"&appointment_status_array="+book_status;
     //    var data = "action=confirmedAppointment&appointment_array="+appointment_id+"&appointment_status_array="+appointment_status;
 
