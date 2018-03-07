@@ -30,6 +30,7 @@
 
     $o->book_salesperson = escape($_POST['book_salesperson']);
     $o->book_address = escape($_POST['book_address']);
+    $o->book_booth_id = escape($_POST['book_booth_id']);
 
     switch ($action) {
         case "create":
