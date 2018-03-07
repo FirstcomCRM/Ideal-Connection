@@ -55,6 +55,28 @@ class SelectControl {
         return $selectctrl;
     }
 
+    //edr get booth title from booth table
+    public function getBooth($pid,$shownull="Y",$wherestring=''){
+        $sql = "SELECT booth_id,booth_title from db_booth WHERE (booth_id = '$pid' or booth_id >0)  $wherestring
+                ORDER BY booth_title ASC";
+      //  return $sql;
+        if($shownull =="Y"){
+            $selectctrl .="<option value = '' SELECTED='SELECTED'>Select One</option>";
+        }
+        $query = mysql_query($sql);
+        while($row = mysql_fetch_array($query)){
+            $id = $row['booth_id'];
+            $code = $row['booth_title'];
+            if($id == $pid){
+                $selected = "SELECTED = 'SELECTED'";
+            }else{
+                $selected = "";
+            }
+            $selectctrl .="<option value = '$id' $selected>$code</option>";
+        }
+        return $selectctrl;
+    }
+
     //edr get all users that are salesperson in user/empl table user_group = 3
     public function getSalesPerson($pid,$shownull="Y",$wherestring=''){
 
@@ -76,6 +98,26 @@ class SelectControl {
         return $selectctrl;
     }
 
+    public function getIndustry($pid,$shownull="Y",$wherestring=''){
+
+        $sql = "SELECT industry_id,industry_type from db_industry WHERE (industry_id = '$pid' or industry_id >0)  $wherestring ORDER BY industry_type ASC";
+
+        if($shownull =="Y"){
+            $selectctrl .="<option value = '' SELECTED='SELECTED'>Select One</option>";
+        }
+        $query = mysql_query($sql);
+        while($row = mysql_fetch_array($query)){
+            $id = $row['industry_id'];
+            $code = $row['industry_type'];
+            if($id == $pid){
+                $selected = "SELECTED = 'SELECTED'";
+            }else{
+                $selected = "";
+            }
+            $selectctrl .="<option value = '$id' $selected>$code</option>";
+        }
+        return $selectctrl;
+    }
 
     public function getBankSelectCtrl($pid,$shownull="Y",$wherestring=''){
         $sql = "SELECT bank_id,bank_code from db_bank WHERE (bank_id = '$pid' or bank_id >0) and bank_status = 1 $wherestring
