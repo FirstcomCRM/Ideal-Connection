@@ -2,7 +2,7 @@
     include_once 'connect.php';
     include_once 'config.php';
     include_once 'include_function.php';
-    include_once 'class/Dashboard.php'; 
+    include_once 'class/Dashboard.php';
     include_once 'class/SavehandlerApi.php';
     include_once 'class/GeneralFunction.php';
     $o = new Dashboard();
@@ -22,7 +22,7 @@
     $o->dashboard_status = escape($_POST['dashboard_status']);
     $o->submit_btn = escape($_POST['submit_btn']);
     $o->org_dashboard_approvalstatus = escape($_POST['org_dashboard_approvalstatus']);
-    
+
     $o->empl_id = escape($_REQUEST['empl_id']);
 
     $o->empl_login_password = escape($_POST['empl_login_password']);
@@ -88,7 +88,7 @@
                 rediectUrl("dashboard.php?action=edit&dashboard_id=$o->dashboard_id",getSystemMsg(0,'Update data fail'));
             }
             exit();
-            break;  
+            break;
         case "edit":
             if($o->fetchDashboardDetail(" AND dashboard_id = '$o->dashboard_id'","","",1)){
                 $o->getInputForm("update");
@@ -96,7 +96,7 @@
                rediectUrl("dashboard.php",getSystemMsg(0,'Fetch Data fail'));
             }
             exit();
-            break;  
+            break;
         case "delete":
             if($o->delete()){
                 $_SESSION['status_alert'] = 'alert-success';
@@ -108,11 +108,11 @@
                 rediectUrl("dashboard.php",getSystemMsg(0,'Delete data fail'));
             }
             exit();
-            break;   
+            break;
         case "createForm":
             $o->getInputForm('create');
             exit();
-            break;   
+            break;
         case "validate_email":
             $t = $gf->checkDuplicate("dashboard",'dashboard_login_email',$o->dashboard_login_email,'dashboard_id',$o->dashboard_id);
             if($t > 0){
@@ -121,11 +121,11 @@
                 echo "true";
             }
             exit();
-            break;  
+            break;
         case "getchangepassword":
             $o->getChangePasswordForm();
             exit();
-            break;  
+            break;
         case "changepassword":
             if($o->ChangePassword()){
                 $_SESSION['status_alert'] = 'alert-success';
@@ -137,7 +137,7 @@
                 rediectUrl("dashboard.php",getSystemMsg(0,'Change Password fail'));
             }
             exit();
-            break;  
+            break;
         case "saveAttendance":
                 if($o->saveAttendance()){
                     echo json_encode(array('status'=>1));
@@ -153,19 +153,19 @@
                     echo json_encode(array('status'=>0));
                 }
             exit();
-            break;             
+            break;
 //        case "getRemarkDetail":backup
 //            $applicantremarks_array = $o->getApplicantRemarks();
-//            $partnerremarks_array = $o->getPartnerRemarks();          
+//            $partnerremarks_array = $o->getPartnerRemarks();
 //            echo json_encode(array('aRemarks'=>$applicantremarks_array,'pRemarks'=>$partnerremarks_array));
 //            exit();
-//            break;    
+//            break;
         case "getRemarkDetail":
             $applicantremarks_array = $o->getApplicantRemarks();
-            $activeApplicant_array = $o->getActiveApplicant();          
+            $activeApplicant_array = $o->getActiveApplicant();
             echo json_encode(array('aRemarks'=>$applicantremarks_array,'applicant'=>$activeApplicant_array));
             exit();
-            break; 
+            break;
         case "getclickTableDetail":
             $remarks_array = $o->getRemarks();
             echo json_encode(array('aRemarks'=>$remarks_array));
@@ -188,7 +188,7 @@
                     echo json_encode(array('status'=>0));
                 }
             exit();
-            break;         
+            break;
         case "updatePartnerDashboardDisplay":
                 if($o->updatePartnerDashboardDisplay()){
                     echo json_encode(array('status'=>1));
@@ -196,7 +196,7 @@
                     echo json_encode(array('status'=>0));
                 }
             exit();
-            break;    
+            break;
         case "updateApplicantDashboardDisplay":
                 if($o->updateApplicantDashboardDisplay()){
                     echo json_encode(array('status'=>1));
@@ -204,11 +204,10 @@
                     echo json_encode(array('status'=>0));
                 }
             exit();
-            break;              
-        default: 
+            break;
+        default:
+        
             $o->getInputForm();
             exit();
             break;
     }
-
-
