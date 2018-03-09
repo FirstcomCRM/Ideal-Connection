@@ -18,12 +18,43 @@ class Booth {
 
     }
     public function create(){
-        $table_field = array('booth_title','booth_price','booth_left','booth_right','booth_location',
+        /*$table_field = array('booth_title','booth_price','booth_left','booth_right','booth_location',
                              'booth_unit_no','booth_address','booth_floor','booth_status','booth_desc'
                             );
         $table_value = array($this->booth_title,$this->booth_price,$this->booth_left,$this->booth_right,$this->booth_location,
                              $this->booth_unit_no,$this->booth_address,$this->booth_floor,$this->booth_status,$this->booth_desc
-                            );
+                           );*/
+
+        $table_field = [
+          'booth_title',
+          'booth_price',
+          'booth_left',
+          'booth_right',
+          'booth_location',
+          'booth_unit_no',
+          'booth_address',
+          'booth_floor',
+          'booth_status',
+          'booth_desc',
+          'booth_min_day',
+          'booth_max_day',
+        ];
+
+        $table_value = [
+          $this->booth_title,
+          $this->booth_price,
+          $this->booth_left,
+          $this->booth_right,
+          $this->booth_location,
+          $this->booth_unit_no,
+          $this->booth_address,
+          $this->booth_floor,
+          $this->booth_status,
+          $this->booth_desc,
+          $this->booth_min_day,
+          $this->booth_max_day,
+        ];
+
         $remark = "Insert Booth.";
         if(!$this->save->SaveData($table_field,$table_value,'db_booth','booth_id',$remark)){
            return false;
@@ -33,12 +64,43 @@ class Booth {
         }
     }
     public function update(){
-        $table_field = array('booth_title','booth_price','booth_left','booth_right','booth_location',
+        /*$table_field = array('booth_title','booth_price','booth_left','booth_right','booth_location',
                              'booth_unit_no','booth_address','booth_floor','booth_status','booth_desc'
                             );
         $table_value = array($this->booth_title,$this->booth_price,$this->booth_left,$this->booth_right,$this->booth_location,
                              $this->booth_unit_no,$this->booth_address,$this->booth_floor,$this->booth_status,$this->booth_desc
-                            );
+                           );*/
+
+        $table_field = [
+             'booth_title',
+             'booth_price',
+             'booth_left',
+             'booth_right',
+             'booth_location',
+             'booth_unit_no',
+             'booth_address',
+             'booth_floor',
+             'booth_status',
+             'booth_desc',
+             'booth_min_day',
+             'booth_max_day',
+         ];
+
+          $table_value = [
+               $this->booth_title,
+               $this->booth_price,
+               $this->booth_left,
+               $this->booth_right,
+               $this->booth_location,
+               $this->booth_unit_no,
+               $this->booth_address,
+               $this->booth_floor,
+               $this->booth_status,
+               $this->booth_desc,
+               $this->booth_min_day,
+               $this->booth_max_day,
+         ];
+
         $remark = "Update Booth.";
         if(!$this->save->UpdateData($table_field,$table_value,'db_booth','booth_id',$remark,$this->booth_id)){
            return false;
@@ -62,6 +124,10 @@ class Booth {
             $this->booth_floor = $row['booth_floor'];
             $this->booth_status = $row['booth_status'];
             $this->booth_desc = $row['booth_desc'];
+            $this->booth_min_day = $row['booth_min_day'];
+            $this->booth_max_day = $row['booth_max_day'];
+
+
         }
         return $query;
     }
@@ -492,6 +558,19 @@ class Booth {
                         <input type="text" class="form-control" id="booth_unit_no" name="booth_unit_no" placeholder="Unit No" value = "<?php echo $this->booth_unit_no;?>">
                       </div>
                     </div>
+
+                    <div class="form-group">
+                      <label for="booth_location" class="col-sm-2 control-label">Minimum Days<?php echo $mandatory?></label>
+                      <div class="col-sm-3">
+                        <input type="number" class="form-control" id="booth_min_day" name="booth_min_day" placeholder="Minimum Days" value = "<?php echo $this->booth_min_day;?>">
+
+                      </div>
+                      <label for="booth_unit_no" class="col-sm-2 control-label">Maximum Days</label>
+                      <div class="col-sm-3">
+                        <input type="number" class="form-control" id="booth_max_day" name="booth_max_day" placeholder="Maximum Days" value = "<?php echo $this->booth_max_day;?>">
+                      </div>
+                    </div>
+
                     <div class="form-group">
                       <label for="booth_address" class="col-sm-2 control-label">Address</label>
                       <div class="col-sm-3">
@@ -734,7 +813,7 @@ class Booth {
 
     //edr Dipslay file upload page??
     public function getFileUploads(){?>
-    
+
      <div class="box-body table-responsive">
 
              <div class="form-group">
@@ -777,7 +856,7 @@ class Booth {
                  <thead>
                    <tr>
                      <th style = 'width:3%'>No</th>
-                     <th style = 'width:10%'>Image Name</th>
+                     <th style = 'width:10%'>File Name</th>
                      <th style = 'width:10%'>Upload Time</th>
                      <th style = 'width:10%'>Upload Date</th>
                      <th style = 'width:10%'></th>
