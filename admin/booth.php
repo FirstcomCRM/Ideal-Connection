@@ -22,6 +22,8 @@
     $o->booth_price = escape($_POST['booth_price']);
     $o->booth_status = escape($_POST['booth_status']);
     $o->booth_desc = escape($_POST['booth_desc']);
+    $o->booth_min_day = escape($_POST['booth_min_day']);
+    $o->booth_max_day = escape($_POST['booth_max_day']);
 
     $o->image_input = $_FILES['image_input'];
     $o->image_id = escape($_REQUEST['image_id']);
@@ -52,13 +54,12 @@
 
             }
 
-
             exit();
             break;
         case "update":
             $boothExist = getDataCountBySql("db_booth"," WHERE booth_title = '".trim($o->booth_title)."' ");
           //  print_r($boothExist);die();
-            if ($boothExist>0) {
+            if ($boothExist>1) {
               $_SESSION['status_alert'] = 'alert-error';
               $_SESSION['status_msg'] = "Delete fail.";
               rediectUrl("booth.php?action=edit&booth_id=$o->booth_id",getSystemMsg(0,'Update data fail: Booth Title already exists in the list'));
@@ -73,7 +74,7 @@
                   $_SESSION['status_alert'] = 'alert-error';
                   $_SESSION['status_msg'] = "Update fail.";
                   rediectUrl("booth.php?action=edit&booth_id=$o->booth_id",getSystemMsg(0,'Update data fail'));
-              }  
+              }
             }
 
 
