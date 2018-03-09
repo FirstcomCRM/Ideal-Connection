@@ -150,7 +150,7 @@ class Dashboard {
         <section class="content" >
 
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-4"><!--start of col-md-4 for Location Box--->
               <div class="box box-primary">
                 <div class="box-header with-border">
                   <h2 class="box-title">Location</h2>
@@ -162,7 +162,7 @@ class Dashboard {
 
                      ?>
 
-                    <span data-toggle="tooltip" title="3 New Messages" class="badge bg-green"><?php echo mysql_result($result, 0) ?></span>
+                    <span data-toggle="tooltip" title="<?php echo mysql_result($result, 0)?> New Location" class="badge bg-green"><?php echo mysql_result($result, 0) ?></span>
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                     </button>
                     <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
@@ -179,7 +179,7 @@ class Dashboard {
                        <?php while ($row = mysql_fetch_array($query)) {?>
                          <li class="item">
                          <div class="product-img">
-                         <img src="dist/img/default-50x50.gif" alt="Product Image">
+                         <img src="dist/img/default-50x50.gif" alt="">
                          </div>
                          <div class="product-info">
                            <h4><?php echo $row['location_title'] ?></h4>
@@ -195,9 +195,97 @@ class Dashboard {
                 </div>
                 <!-- /.box-footer -->
               </div>
-            </div>
+            </div><!--End of col-md-4 for Location Box--->
+
+
             <div class="col-md-4">
-              box for booking
+
+              <div class="box box-info">
+                <div class="box-header with-border">
+                  <h2 class="box-title">Booking</h2>
+                  <div class="box-tools pull-right">
+                    <?php
+                    $result = mysql_query("SELECT count(*) from db_booking ;");
+                //    echo   mysql_result($result, 0);
+                     ?>
+                    <span data-toggle="tooltip" title="<?php echo mysql_result($result, 0)?> New Booking" class="badge bg-blue"><?php echo mysql_result($result, 0) ?></span>
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                  </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <ul class="products-list product-list-in-box">
+                      <?php
+                        $sql = "SELECT * FROM db_booking  ORDER BY updateDateTime DESC LIMIT 5";
+                        $query = mysql_query($sql);
+
+                       ?>
+                       <?php while ($row = mysql_fetch_array($query)) {?>
+                         <li class="item">
+                         <div class="product-img">
+                         <img src="dist/img/default-50x50.gif" alt="">
+                         </div>
+                         <div class="product-info">
+                           <h4><?php echo $row['book_name'] ?></h4>
+                         </div>
+                         </li>
+                       <?php  } ?>
+
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-center">
+                <a href="booking.php" class="uppercase">View All Booking</a>
+                </div>
+                <!-- /.box-footer -->
+              </div>
+            </div>
+
+            <div class="col-md-4">
+
+              <div class="box box-default">
+                <div class="box-header with-border">
+                  <h2 class="box-title">SalesPerson</h2>
+                  <div class="box-tools pull-right">
+                    <?php
+                    $result = mysql_query("SELECT count(*) from db_empl WHERE empl_group = 3 ;");
+                //    echo   mysql_result($result, 0);
+                     ?>
+                    <span data-toggle="tooltip" title="<?php echo mysql_result($result, 0)?> New SalesPerson" class="badge bg-blue"><?php echo mysql_result($result, 0) ?></span>
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                  </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <ul class="products-list product-list-in-box">
+                      <?php
+                        $sql = "SELECT * FROM db_empl WHERE empl_group = 3  ORDER BY updateDateTime DESC LIMIT 5";
+                        $query = mysql_query($sql);
+
+                       ?>
+                       <?php while ($row = mysql_fetch_array($query)) {?>
+                         <li class="item">
+                         <div class="product-img">
+                         <img src="dist/img/default-50x50.gif" alt="">
+                         </div>
+                         <div class="product-info">
+                           <h4><?php echo $row['empl_name'] ?></h4>
+                         </div>
+                         </li>
+                       <?php  } ?>
+
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-center">
+                <a href="empl.php" class="uppercase">View SalesPerson</a>
+                </div>
+                <!-- /.box-footer -->
+              </div>
             </div>
           </div>
 
