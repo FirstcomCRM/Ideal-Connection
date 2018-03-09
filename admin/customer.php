@@ -26,6 +26,11 @@
     //  $o->location_desc = escape($_POST['location_desc']);
     $o->partner_remark = escape($_POST['partner_remark']);
     $o->partner_postal_code = escape($_REQUEST['partner_postal_code']);
+    $o->partner_ic_number = escape($_REQUEST['partner_ic_number']);
+    $o->partner_acra_date = escape($_REQUEST['partner_acra_date']);
+    $o->partner_pic_url = $_FILES['partner_pic_url'];
+    //  $o->image_input = $_FILES['image_input'];
+
 
 
     switch ($action) {
@@ -42,6 +47,7 @@
             exit();
             break;
         case "update":
+
             if($o->update()){
                 $_SESSION['status_alert'] = 'alert-success';
                 $_SESSION['status_msg'] = "Update success.";
@@ -54,8 +60,6 @@
             exit();
             break;
         case "edit":
-          //  $test = $o->fetchCustomerDetail(" AND partner_id = '$o->partner_id'","","",1);
-
             if($o->fetchCustomerDetail(" AND partner_id = '$o->partner_id'","","",1)){
                 $o->getInputForm("update");
             }else{
