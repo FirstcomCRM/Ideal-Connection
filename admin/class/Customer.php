@@ -36,6 +36,8 @@ class Customer {
           'partner_postal_code',
           'partner_iscustomer', //value of 1
           'partner_status', //value of 1
+          'partner_ic_number',
+          'partner_acra_date',
         ];
         $table_value = [
           $this->partner_account_name1,
@@ -52,6 +54,8 @@ class Customer {
           $this->partner_postal_code,
           $def_stat,
           $def_stat,
+          $this->partner_ic_number,
+          format_date_database($this->partner_acra_date),
         ];
 
 
@@ -60,9 +64,95 @@ class Customer {
            return false;
         }else{
            $this->partner_id = $this->save->lastInsert_id;
+           $this->uploadAttachment($this->partner_id);
+
            return true;
         }
     }
+
+    public function uploadAttachment($id){
+
+
+        $n_field = [];
+        $n_value = [];
+         $filename= '';
+        $path = "dist/customer/$id/";
+        if (!file_exists($path)) {
+          mkdir("dist/customer/$id", 0755, true);
+        }
+
+        if (isset($_FILES['partner_pic_url'])) {
+          if (file_exists($this->partner_pic_url)) {
+            unlink($this->partner_pic_url);
+          }
+           $filename = $_FILES['partner_pic_url']['name'];
+           $file_tmp = $_FILES['partner_pic_url']['tmp_name'];
+           $true_path = $path.$filename;
+           move_uploaded_file($file_tmp ,"dist/customer/$id/$filename");
+           if (!empty($filename) ) {
+             $n_field[] = 'partner_pic_url';
+             $n_value[] = $true_path;
+           }
+
+         }
+         $filename= '';
+
+         if (isset($_FILES['ic_attachment'])) {
+            $filename = $_FILES['ic_attachment']['name'];
+            if (file_exists($this->partner_ic_attach)) {
+              unlink($this->partner_ic_attach);
+            }
+            $file_tmp = $_FILES['ic_attachment']['tmp_name'];
+            $true_path = $path.$filename;
+            move_uploaded_file($file_tmp ,"dist/customer/$id/$filename");
+            if (!empty($filename)) {
+              $n_field[] = 'partner_ic_attach';
+              $n_value[] = $true_path;
+            }
+
+          }
+          $filename= '';
+
+          if (isset($_FILES['acra_attachment'])) {
+             $filename = $_FILES['acra_attachment']['name'];
+             if (file_exists($this->partner_acra_attach)) {
+               unlink($this->partner_acra_attach);
+             }
+             $file_tmp = $_FILES['acra_attachment']['tmp_name'];
+             $true_path = $path.$filename;
+             move_uploaded_file($file_tmp ,"dist/customer/$id/$filename");
+             if (!empty($filename) ) {
+               $n_field[] = 'partner_acra_attach';
+               $n_value[] = $true_path;
+             }
+
+           }
+           $filename= '';
+
+           if (isset($_FILES['license_attachment'])) {
+              $filename = $_FILES['license_attachment']['name'];
+              if (file_exists($this->partner_license)) {
+                unlink($this->partner_license);
+              }
+              $file_tmp = $_FILES['license_attachment']['tmp_name'];
+              $true_path = $path.$filename;
+              move_uploaded_file($file_tmp ,"dist/customer/$id/$filename");
+              if (!empty($filename) ) {
+                $n_field[] = 'partner_license';
+                $n_value[] = $true_path;
+              }
+
+            }
+
+         $remarks = 'blk';
+         if (!empty($n_field)) {
+           $this->save->UpdateData($n_field,$n_value,'db_partner','partner_id',$remark,$this->partner_id);
+
+        //   move_uploaded_file($file_tmp ,"dist/customer/$id/$filename");
+         }
+
+    }
+
     public function update(){
       //  $table_field = array('location_title','location_postal_code','location_unit_no','location_address','location_desc','location_status');
     //    $table_value = array($this->location_title,$this->location_postal_code,$this->location_unit_no,$this->location_address,$this->location_desc,$this->location_status);
@@ -81,6 +171,8 @@ class Customer {
             'partner_postal_code',
           //  'partner_iscustomer', //value of 1
         //    'partner_status', //value of 1
+            'partner_ic_number',
+            'partner_acra_date',
           ];
           $table_value = [
             $this->partner_account_name1,
@@ -95,6 +187,8 @@ class Customer {
             $this->partner_email,
             $this->partner_remark,
             $this->partner_postal_code,
+            $this->partner_ic_number,
+            format_date_database($this->partner_acra_date),
 
           ];
 
@@ -102,6 +196,7 @@ class Customer {
         if(!$this->save->UpdateData($table_field,$table_value,'db_partner','partner_id',$remark,$this->partner_id)){
            return false;
         }else{
+            $this->uploadAttachment($this->partner_id);
            return true;
         }
     }
@@ -125,7 +220,12 @@ class Customer {
             $this->partner_email =$row['partner_email'];
             $this->partner_remark =$row['partner_remark'];
             $this->partner_postal_code =$row['partner_postal_code'];
-
+            $this->partner_pic_url = $row['partner_pic_url'];
+            $this->partner_ic_number = $row['partner_ic_number'];
+            $this->partner_acra_date = $row['partner_acra_date'];
+            $this->partner_ic_attach = $row['partner_ic_attach'];
+            $this->partner_acra_attach = $row['partner_acra_attach'];
+            $this->partner_license = $row['partner_license'];
         }
         return $query;
     }
@@ -133,6 +233,7 @@ class Customer {
         if($this->save->DeleteData("db_partner"," WHERE partner_id = '$this->partner_id'","Delete Partner.")){
             return true;
         }else{
+
             return false;
         }
     }
@@ -177,76 +278,178 @@ class Customer {
                 <?php }?>
               </div>
 
-                <form id = 'location_form' class="form-horizontal" action = 'customer.php?action=create' method = "POST">
+
+
+                <form id = 'location_form' class="form-horizontal" action = 'customer.php?action=create' method = "POST" enctype="multipart/form-data">
                   <div class="box-body">
 
-                    <div class="form-group">
-                      <label for="location_title" class="col-sm-2 control-label">Account Name</label>
-                      <div class="col-sm-3">
-                        <input type="text" class="form-control" id="partner_account_name1" name="partner_account_name1" placeholder="Account Name" value = "<?php echo $this->partner_account_name1;?>">
-                      </div>
-                      <label for="location_status" class="col-sm-2 control-label">Code</label>
-                      <div class="col-sm-3">
-                        <input type="text" class="form-control" id="partner_code" name="partner_code" placeholder="Code" value = "<?php echo $this->partner_code;?>">
-                      </div>
+                    <div class="nav-tabs-custom">
+                      <ul class="nav nav-tabs">
+                        <li tab = "General Info" class="tab_header active"><a href="#general" data-toggle="tab">General Info</a></li>
+                        <li tab = "Files" class="tab_header " ><a href="#files" data-toggle="tab">Files</a></li>
+
+                      </ul>
                     </div>
+                    <div class="tab-content">
+                        <!--Start of Genral Info tab-->
+                        <div class=" tab-pane in active" id="general">
+                          <div class="form-group">
+                            <label for="location_title" class="col-sm-2 control-label">Account Name</label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control" id="partner_account_name1" name="partner_account_name1" placeholder="Account Name" value = "<?php echo $this->partner_account_name1;?>">
+                            </div>
+                            <label for="location_status" class="col-sm-2 control-label">Code</label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control" id="partner_code" name="partner_code" placeholder="Code" value = "<?php echo $this->partner_code;?>">
+                            </div>
 
-                    <div class="form-group">
-                      <label for="location_postal_code" class="col-sm-2 control-label">Customer Name</label>
-                      <div class="col-sm-3">
-                        <input type="text" class="form-control" onkeyup="checkEnter()"  id="partner_name" name="partner_name" value = "<?php echo $this->partner_name;?>" placeholder="Name">
-                      </div>
-                      <label for="location_unit_no" class="col-sm-2 control-label">Sales Person<?php // echo $mandatory?></label>
-                      <div class="col-sm-3">
-                        <input type="text" class="form-control" id="partner_sales_person" name="partner_sales_person" placeholder="Sales Person" value = "<?php echo $this->partner_sales_person;?>">
-                      </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label for="location_postal_code" class="col-sm-2 control-label">Customer Name</label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control" onkeyup="checkEnter()"  id="partner_name" name="partner_name" value = "<?php echo $this->partner_name;?>" placeholder="Name">
+                            </div>
+                            <label for="location_unit_no" class="col-sm-2 control-label">Sales Person<?php // echo $mandatory?></label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control" id="partner_sales_person" name="partner_sales_person" placeholder="Sales Person" value = "<?php echo $this->partner_sales_person;?>">
+                            </div>
+
+                          </div>
+
+
+                          <div class="form-group">
+                            <label for="location_address" class="col-sm-2 control-label">Billing Address <?php echo $mandatory?></label>
+                            <div class="col-sm-3">
+                                  <textarea class="form-control" rows="3" id="partner_bill_address" name="partner_bill_address" placeholder="Billing Address" ><?php echo $this->partner_bill_address;?></textarea>
+                            </div>
+                            <label for="location_desc" class="col-sm-2 control-label">Shipping Address</label>
+                            <div class="col-sm-3">
+                                  <textarea class="form-control" rows="3" id="partner_ship_address" name="partner_ship_address" placeholder="Shipping Address"><?php echo $this->partner_ship_address;?></textarea>
+                            </div>
+
+                          </div>
+
+                          <div class="form-group">
+                            <label for="location_postal_code" class="col-sm-2 control-label">Telephone1</label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control" onkeyup="checkEnter()"  id="partner_tel" name="partner_tel" value = "<?php echo $this->partner_tel;?>" placeholder="Telephone1`">
+                            </div>
+                            <label for="location_unit_no" class="col-sm-2 control-label">Telephone2<?php // echo $mandatory?></label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control" id="location_title" name="partner_tel2" placeholder="Telephone2" value = "<?php echo $this->partner_tel2;?>">
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label for="location_postal_code" class="col-sm-2 control-label">Fax</label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control" onkeyup="checkEnter()"  id="partner_fax" name="partner_fax" value = "<?php echo $this->partner_fax;?>" placeholder="Fax">
+                            </div>
+                            <label for="location_unit_no" class="col-sm-2 control-label">Email<?php // echo $mandatory?></label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control" id="partner_email" name="partner_email" placeholder="Email" value = "<?php echo $this->partner_email;?>">
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label for="location_postal_code" class="col-sm-2 control-label">Postal Code<?php echo $mandatory?></label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control" onkeyup="checkEnter()"  id="partner_postal_code" name="partner_postal_code" value = "<?php echo $this->partner_postal_code;?>" placeholder="Postal Code">
+                            </div>
+                            <label for="location_unit_no" class="col-sm-2 control-label">Remarks<?php // echo $mandatory?></label>
+                            <div class="col-sm-3">
+                              <textarea class="form-control" rows="3" id="partner_remark" name="partner_remark" placeholder="Remarks"><?php echo $this->partner_remark;?></textarea>
+                            </div>
+                          </div>
+                        </div>
+                        <!--End of Genral Info tab-->
+
+                        <!--Start of Files tab-->
+                        <div class=" tab-pane fade" id="files">
+                          <div class="form-group">
+                            <div class="col-sm-3">
+
+                              <?php if (!empty($this->partner_id)  && !empty($this->partner_pic_url)): ?>
+                                <img src="<?php echo  $this->partner_pic_url?>" alt="" style = 'width:215px;height:215px;'>
+                              <?php else: ?>
+                                <img src="dist/img/avatar.png" alt="" style = 'width:215px;height:215px;'>
+                              <?php endif; ?>
+
+                              <br><br>
+                              <label for="">Profile Image</label>
+                              <input  data-toggle="tooltip" title="Please upload image in 128 x 128 pixels " type = "file" name = "partner_pic_url" id="partner_pic_url" />
+
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label for="location_postal_code" class="col-sm-1 control-label">IC Number</label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control" onkeyup="checkEnter()"  id="partner_postal_code" name="partner_ic_number" value = "<?php echo $this->partner_ic_number;?>" placeholder="IC Number">
+
+                            </div>
+                            <label for="location_unit_no" class="col-sm-1 control-label">IC Attachment<?php // echo $mandatory?></label>
+                            <div class="col-sm-3">
+                              <input  data-toggle="tooltip" title="Please upload image in 128 x 128 pixels " type = "file" name = "ic_attachment" />
+
+                            </div>
+
+                          </div>
+                          <div class="form-group">
+                            <label for="location_postal_code" class="col-sm-1 control-label">ACRA Expiry Date</label>
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control datepicker" onkeyup="checkEnter()"  id="partner_acra_date" name="partner_acra_date" value = "<?php echo format_date($this->partner_acra_date);?>" placeholder="ACRA Expiry Date">
+                            </div>
+                            <label for="location_unit_no" class="col-sm-1 control-label">ACRA Attacment<?php // echo $mandatory?></label>
+                            <div class="col-sm-3">
+                              <input  data-toggle="tooltip" title="Please upload image in 128 x 128 pixels " type = "file" name = "acra_attachment" />
+
+                            </div>
+
+                          </div>
+
+                          <div class="form-group">
+                            <label for="location_postal_code" class="col-sm-1 control-label">License Attachment</label>
+                            <div class="col-sm-3">
+                              <input  data-toggle="tooltip" title="Please upload image in 128 x 128 pixels " type = "file" name = "license_attachment" />
+                            </div>
+                          </div>
+
+                          <table class="table table-bordered">
+                            <thead>
+                              <th class="text-center">IC Attachment</th>
+                              <th class="text-center">ACRA Attachment</th>
+                              <th class="text-center">License Attachment</th>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <?php if (!empty($this->partner_ic_attach) ): ?>
+                                  <td class="text-center"><a href="<?php echo $this->partner_ic_attach ?>" download> IC</a>  </td>
+                                <?php else: ?>
+                                  <td></td>
+                                <?php endif; ?>
+
+                                <?php if (!empty($this->partner_acra_attach) ): ?>
+                                    <td class="text-center"> <a href="<?php echo $this->partner_acra_attach ?>" download> ACRA</a>  </td>
+                                <?php else: ?>
+                                  <td></td>
+                                <?php endif; ?>
+
+                                <?php if (!empty($this->partner_license) ): ?>
+                                   <td class="text-center"> <a href="<?php echo $this->partner_license ?>" download> License</a></td>
+                                <?php else: ?>
+                                  <td></td>
+                                <?php endif; ?>
+
+                              </tr>
+                            </tbody>
+                          </table>
+
+                        </div>
+                        <!--End of Files tab-->
+
                     </div>
-
-
-                    <div class="form-group">
-                      <label for="location_address" class="col-sm-2 control-label">Billing Address <?php echo $mandatory?></label>
-                      <div class="col-sm-3">
-                            <textarea class="form-control" rows="3" id="partner_bill_address" name="partner_bill_address" placeholder="Billing Address" ><?php echo $this->partner_bill_address;?></textarea>
-                      </div>
-                      <label for="location_desc" class="col-sm-2 control-label">Shipping Address</label>
-                      <div class="col-sm-3">
-                            <textarea class="form-control" rows="3" id="partner_ship_address" name="partner_ship_address" placeholder="Shipping Address"><?php echo $this->partner_ship_address;?></textarea>
-                      </div>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="location_postal_code" class="col-sm-2 control-label">Telephone1</label>
-                      <div class="col-sm-3">
-                        <input type="text" class="form-control" onkeyup="checkEnter()"  id="partner_tel" name="partner_tel" value = "<?php echo $this->partner_tel;?>" placeholder="Telephone1`">
-                      </div>
-                      <label for="location_unit_no" class="col-sm-2 control-label">Telephone2<?php // echo $mandatory?></label>
-                      <div class="col-sm-3">
-                        <input type="text" class="form-control" id="location_title" name="partner_tel2" placeholder="Telephone2" value = "<?php echo $this->partner_tel2;?>">
-                      </div>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="location_postal_code" class="col-sm-2 control-label">Fax</label>
-                      <div class="col-sm-3">
-                        <input type="text" class="form-control" onkeyup="checkEnter()"  id="partner_fax" name="partner_fax" value = "<?php echo $this->partner_fax;?>" placeholder="Fax">
-                      </div>
-                      <label for="location_unit_no" class="col-sm-2 control-label">Email<?php // echo $mandatory?></label>
-                      <div class="col-sm-3">
-                        <input type="text" class="form-control" id="partner_email" name="partner_email" placeholder="Email" value = "<?php echo $this->partner_email;?>">
-                      </div>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="location_postal_code" class="col-sm-2 control-label">Postal Code<?php echo $mandatory?></label>
-                      <div class="col-sm-3">
-                        <input type="text" class="form-control" onkeyup="checkEnter()"  id="partner_postal_code" name="partner_postal_code" value = "<?php echo $this->partner_postal_code;?>" placeholder="Postal Code">
-                      </div>
-                      <label for="location_unit_no" class="col-sm-2 control-label">Remarks<?php // echo $mandatory?></label>
-                      <div class="col-sm-3">
-                        <textarea class="form-control" rows="3" id="partner_remark" name="partner_remark" placeholder="Remarks"><?php echo $this->partner_remark;?></textarea>
-                      </div>
-                    </div>
-
 
                   </div><!-- /.box-body -->
                   <div class="box-footer">
